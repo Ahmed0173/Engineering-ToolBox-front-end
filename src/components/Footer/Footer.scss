@@ -1,0 +1,113 @@
+.app-footer {
+  background-color: #310B0B;
+  color: #f8f4ee;
+  padding: 1rem 4% 0;
+  font-family: 'Montserrat', sans-serif;
+  position: relative;
+  z-index: 10;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #EEB76B, #E2703A, #9C3D54);
+  }
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .footer-section {
+    margin-bottom: 1.5rem;
+
+    h3 {
+      font-family: 'Playfair Display', serif;
+      color: #EEB76B;
+      font-size: 1.3rem;
+      margin-bottom: 0.8rem;
+      position: relative;
+      display: inline-block;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 50%;
+        height: 2px;
+        background: #E2703A;
+      }
+    }
+
+    h4 {
+      font-family: 'Playfair Display', serif;
+      color: #EEB76B;
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+      line-height: 0.9;
+    }
+  }
+
+  .footer-link {
+    color: #f8f4ee;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.8rem;
+    transition: all 0.3s ease;
+    position: relative;
+    padding-left: 1rem;
+
+    &::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: #E2703A;
+      transition: transform 0.3s ease;
+    }
+
+    &:hover {
+      color: #EEB76B;
+      transform: translateX(5px);
+
+      &::before {
+        transform: translateX(3px);
+      }
+    }
+  }
+
+  .footer-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  .footer-auth-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  @media (max-width: 768px) {
+    padding: 2rem 5% 0;
+
+    .footer-content {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .footer-section {
+      margin-bottom: 1.5rem;
+    }
+  }
+}
