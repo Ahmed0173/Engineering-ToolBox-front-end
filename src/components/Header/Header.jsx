@@ -36,6 +36,9 @@ const NavBar = ({ user, handleSignOut }) => {
 
           {user ? (
             <>
+              <NavLink to="/private-chats" className={linkClass}>
+                Chats
+              </NavLink>
               <span className="nav-user">Hi, {user.username}</span>
               <Link to="/" onClick={onSignOut} className="nav-cta">Sign Out</Link>
             </>
