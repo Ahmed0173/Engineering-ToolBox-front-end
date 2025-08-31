@@ -27,20 +27,43 @@ const getPostById = async (postId) => {
 }
 
 const createPost = async (formData) => {
+  console.log(formData)
   try {
     const token = localStorage.getItem('token')
+    if (!token) throw new Error('No authentication token found')
+
+
+    
     const res = await fetch(`${BASE_URL}/new`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(formData)
     })
-    const data = await res.json()
+    
+    // Log the raw response for debugging
+    const rawResponse = await res.text()
+    console.log('Raw server response:', rawResponse)
+    
+    // Try to parse as JSON
+    let data
+    try {
+      data = JSON.parse(rawResponse)
+    } catch (e) {
+      console.error('Failed to parse response as JSON:', rawResponse)
+      throw new Error('Server returned invalid JSON response')
+    }
+    
+    if (!res.ok) {
+      throw new Error(data.message || `HTTP error! status: ${res.status}`)
+    }
+    
     return data
   } catch (err) {
-    console.log(err)
+    console.error('Create post error:', err)
+    throw err
   }
 }
 

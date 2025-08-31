@@ -50,12 +50,16 @@ const NavBar = ({ user, handleSignOut }) => {
 
           {user ? (
             <>
+
+              <NavLink to="/PostForm" className={linkClass}>Make a post</NavLink>
+              <span className="nav-user">Hi, {user.username}</span>
               <NavLink to="/private-chats" className={linkClass} onClick={closeMenu}>
                 Chats
               </NavLink>
 
               {/* optional greeting; remove if you want only the circle */}
               {/* <span className="nav-user">Hi, {user.username}</span> */}
+
 
               <Link to="/" onClick={onSignOut} className="nav-cta">Sign Out</Link>
             </>
