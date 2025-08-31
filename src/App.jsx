@@ -1,3 +1,4 @@
+import PostsPage from "./components/PostsPage/PostsPage";
 import './App.scss'
 import React from 'react'
 import Header from './components/Header/Header.jsx'   // <-- Uppercase import name
@@ -13,6 +14,9 @@ export default function App() {
         <Route path="/" element={<Home />} />
         {/* add more routes later */}
       </Routes>
+        <div>
+         <PostsPage />
+       </div>
     </>
-  )
+  );
 }
