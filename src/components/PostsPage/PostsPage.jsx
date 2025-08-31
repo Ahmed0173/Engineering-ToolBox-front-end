@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAllPosts, likePost, savePost, deletePost } from '../../services/postService';
 import { getUser } from '../../services/authService';
+import { Link } from 'react-router-dom'
 import './PostsPage.scss';
 
 const PostsPage = () => {
@@ -127,9 +128,19 @@ const PostsPage = () => {
                 )}
               </div>
 
-              <div className="post-content">
-                <p>{post.content}</p>
-              </div>
+              <Link to={`/posts/${post._id}`} className="post-link">
+  <div className="post-content">
+    <p>{post.content}</p>
+  </div>
+
+  {post.tags && post.tags.length > 0 && (
+    <div className="post-tags">
+      {post.tags.map((tag, index) => (
+        <span key={index} className="tag">#{tag}</span>
+      ))}
+    </div>
+  )}
+</Link>
 
               {post.tags && post.tags.length > 0 && (
                 <div className="post-tags">
