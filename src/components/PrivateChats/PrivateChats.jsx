@@ -1,0 +1,1 @@
+// index all private chats for the logged-in user
