@@ -70,3 +70,12 @@
   .navbar .nav-links { display: none; flex-direction: column; align-items: flex-start; gap: .75rem; padding-top: .5rem; }
   .navbar .nav-links.open { display: flex; }
 }
+.nav-profile { display: inline-flex; align-items: center; gap: .45rem; }
+.avatar-dot {
+
+  width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: #8c2f3b; color: #fff;  // match your theme
+  font-size: .75rem; font-weight: 700;
+}
+
