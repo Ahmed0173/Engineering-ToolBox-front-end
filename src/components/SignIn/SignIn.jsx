@@ -10,7 +10,6 @@ const SignIn = (props) => {
   const initialState = {
     username: '',
     password: '',
-    email: '',
   }
 
   const [formData, setFormData] = useState(initialState)
@@ -55,18 +54,6 @@ const SignIn = (props) => {
             value={formData.username}
             onChange={handleChange}
             placeholder="Enter your username"
-            required
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Email:</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="email@provider.com"
             required
           />
         </div>
