@@ -7,7 +7,12 @@ import PostForm from './components/postForm/postForm.jsx'
 import './App.scss'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import * as authService from './services/authService'
+
+import PrivateChats from './components/PrivateChats/PrivateChats.jsx'
+import UserProfile from './components/UserProfile/UserProfile.jsx'
+import PostDetails from './components/PostDetails/PostDetails.jsx'
 import { createPost, updatePost } from './services/postService.js'
+
 
 // Home component
 const Home = () => (
@@ -81,9 +86,12 @@ const handleAddPost = async (postData) => {
     <>
       <Header user={user} handleSignOut={handleSignOut} />
       <Routes>
+        <Route path="/profile" element={<UserProfile user={user} />} />
         <Route path="/" element={<Home />} />
         <Route path="/posts" element={<PostsPage />} />
+        <Route path="/posts/:postId" element={<PostDetails />} />
         <Route path="/signup" element={<SignUp handleSignUp={handleSignUp} />} />
+        <Route path="/private-chats" element={user ? <PrivateChats /> : <Navigate to="/signin" replace />} />
         <Route
           path="/signin"
           element={
@@ -95,7 +103,10 @@ const handleAddPost = async (postData) => {
           }
         />
 
-        <Route
+        <Route path="/profile" element={<UserProfile user={user} />} />
+
+
+    <Route
           path="/PostForm"
           element={
             user ? (
@@ -108,7 +119,7 @@ const handleAddPost = async (postData) => {
             )
           }
         />
-        
+
         {/* Legacy redirects */}
         <Route path="/sign-up" element={<Navigate to="/signup" replace />} />
         <Route path="/sign-in" element={<Navigate to="/signin" replace />} />
@@ -116,3 +127,4 @@ const handleAddPost = async (postData) => {
     </>
   )
 }
+// backup

@@ -8,18 +8,31 @@ const NavBar = ({ user, handleSignOut }) => {
 
   const onSignOut = (e) => {
     e.preventDefault();
-    if (handleSignOut) handleSignOut();
-    navigate('/signin');
+    handleSignOut?.();
+    navigate('/');
   };
 
-  const linkClass = ({ isActive }) =>
-    `nav-link${isActive ? ' active' : ''}`;
+  const linkClass = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`;
+  const closeMenu = () => setOpen(false);
+
+  const initial = (user?.username || user?.email || 'U').trim()[0]?.toUpperCase();
 
   return (
     <header className="navbar">
       <div className="nav-inner">
-        <Link to="/" className="brand">Engineering Toolbox</Link>
+        {/* LEFT: avatar + brand */}
+        <div className="nav-left">
+          {user && (
+            <Link to="/profile" className="avatar-link" aria-label="Profile" onClick={closeMenu}>
+              {user.avatar
+                ? <img src={user.avatar} alt="" className="avatar-img" />
+                : <span className="avatar-dot">{initial}</span>}
+            </Link>
+          )}
+          <Link to="/" className="brand">Engineering Toolbox</Link>
+        </div>
 
+        {/* mobile toggle */}
         <button
           className="menu-toggle"
           aria-label="Toggle navigation"
@@ -29,24 +42,34 @@ const NavBar = ({ user, handleSignOut }) => {
           ☰
         </button>
 
-        <nav className={`nav-links ${open ? 'open' : ''}`}>
-          <NavLink to="/posts" className={linkClass}>
+        {/* RIGHT: links */}
+        <div className={`nav-right ${open ? 'open' : ''}`}>
+          <NavLink to="/posts" className={linkClass} onClick={closeMenu}>
             Posts
           </NavLink>
 
           {user ? (
             <>
+
               <NavLink to="/PostForm" className={linkClass}>Make a post</NavLink>
               <span className="nav-user">Hi, {user.username}</span>
+              <NavLink to="/private-chats" className={linkClass} onClick={closeMenu}>
+                Chats
+              </NavLink>
+
+              {/* optional greeting; remove if you want only the circle */}
+              {/* <span className="nav-user">Hi, {user.username}</span> */}
+
+
               <Link to="/" onClick={onSignOut} className="nav-cta">Sign Out</Link>
             </>
           ) : (
             <>
-              <NavLink to="/signin" className="nav-cta">Sign In</NavLink>
-              <NavLink to="/signup" className={linkClass}>Sign Up</NavLink>
+              <NavLink to="/signin" className={linkClass} onClick={closeMenu}>Sign In</NavLink>
+              <NavLink to="/signup" className={linkClass} onClick={closeMenu}>Sign Up</NavLink>
             </>
           )}
-        </nav>
+        </div>
       </div>
     </header>
   );
