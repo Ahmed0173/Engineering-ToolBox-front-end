@@ -36,6 +36,7 @@ const SignIn = (props) => {
             navigate('/')
         } catch (err) {
             setError('Sign in failed. Please check your credentials.')
+            console.error(err)
         }
     }
 
