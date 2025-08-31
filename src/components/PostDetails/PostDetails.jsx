@@ -1,0 +1,1 @@
+// Post details component for displaying a single post
