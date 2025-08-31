@@ -3,10 +3,16 @@ const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/posts`
 const getAllPosts = async () => {
   try {
     const res = await fetch(BASE_URL)
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+    }
+    
     const data = await res.json()
     return data
   } catch (err) {
-    console.log(err)
+    console.error('Error in getAllPosts:', err)
+    throw err
   }
 }
 
@@ -82,10 +88,16 @@ const likePost = async (postId) => {
         Authorization: `Bearer ${token}`
       }
     })
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+    }
+    
     const data = await res.json()
     return data
   } catch (err) {
-    console.log(err)
+    console.error('Error in likePost:', err)
+    throw err
   }
 }
 

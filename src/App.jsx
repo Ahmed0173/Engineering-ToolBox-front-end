@@ -1,9 +1,11 @@
 import "./App.scss";
+import React from "react";
+import PostsPage from "./components/PostsPage/PostsPage";
 
 const App = () => {
   return (
     <div>
-      <h1> Engineering ToolBox </h1>
+      <PostsPage />
     </div>
   );
 }
