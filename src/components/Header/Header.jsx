@@ -9,7 +9,7 @@ const NavBar = ({ user, handleSignOut }) => {
   const onSignOut = (e) => {
     e.preventDefault();
     handleSignOut?.();
-    navigate('/signin');
+    navigate('/');
   };
 
   const linkClass = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`;
@@ -61,7 +61,7 @@ const NavBar = ({ user, handleSignOut }) => {
             </>
           ) : (
             <>
-              <NavLink to="/signin" className="nav-cta" onClick={closeMenu}>Sign In</NavLink>
+              <NavLink to="/signin" className={linkClass} onClick={closeMenu}>Sign In</NavLink>
               <NavLink to="/signup" className={linkClass} onClick={closeMenu}>Sign Up</NavLink>
             </>
           )}
