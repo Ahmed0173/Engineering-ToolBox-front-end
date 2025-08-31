@@ -63,8 +63,30 @@ const sendMessage = async (chatId, content) => {
     }
 }
 
+const startChat = async (participantId) => {
+    try {
+        const token = localStorage.getItem('token');
+        const res = await fetch(`${BASE_URL}/start`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ participantId })
+        });
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return await res.json();
+    } catch (err) {
+        console.error('Error in startChat:', err);
+        throw err;
+    }
+};
+
 export {
     getChats,
     getChat,
-    sendMessage
+    sendMessage,
+    startChat
 }

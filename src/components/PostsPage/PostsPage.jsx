@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { getAllPosts, likePost, savePost, deletePost } from '../../services/postService';
 import { getUser } from '../../services/authService';
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import './PostsPage.scss';
+import PrivateChatModal from './PrivateChatModal'; // Import the modal component (to be created)
+import { startChat } from '../../services/chatService';
 
 const PostsPage = () => {
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [user, setUser] = useState(null);
+    const [showChatModal, setShowChatModal] = useState(false);
+    const [selectedUser, setSelectedUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const currentUser = getUser();
@@ -92,6 +97,33 @@ const PostsPage = () => {
         return user && post.likes && Array.isArray(post.likes) && post.likes.includes(user._id);
     };
 
+    const handleAuthorClick = (author) => {
+        if (author && user && author._id !== user._id) {
+            setSelectedUser(author);
+            setShowChatModal(true);
+        }
+    };
+
+    const handleStartChat = async () => {
+        try {
+            const chat = await startChat(selectedUser._id);
+            setShowChatModal(false);
+            setSelectedUser(null);
+            if (chat && chat._id) {
+                navigate(`/chats/${chat._id}`);
+            } else {
+                alert('Failed to start chat.');
+            }
+        } catch (err) {
+            alert('Error starting chat: ' + (err.message || err));
+        }
+    };
+
+    const handleCloseModal = () => {
+        setShowChatModal(false);
+        setSelectedUser(null);
+    };
+
     if (loading) return <div className="loading">Loading posts...</div>;
     if (error) return <div className="error">{error}</div>;
 
@@ -117,7 +149,13 @@ const PostsPage = () => {
                         <div key={post._id} className="post-card">
                             <div className="post-header">
                                 <div className="post-author">
-                                    <span className="author-name">@{post.author?.username || 'Unknown'}</span>
+                                    <span
+                                        className="author-name clickable"
+                                        onClick={() => handleAuthorClick(post.author)}
+                                        style={{ cursor: post.author && user && post.author._id !== user._id ? 'pointer' : 'default', color: '#0077cc', textDecoration: 'underline' }}
+                                    >
+                                        @{post.author?.username || 'Unknown'}
+                                    </span>
                                     <span className="post-date">{formatDate(post.createdAt)}</span>
                                 </div>
                                 {isUserPost(post) && (
@@ -173,6 +211,13 @@ const PostsPage = () => {
                             </div>
                         </div>
                     ))}
+                    {showChatModal && selectedUser && (
+                        <PrivateChatModal
+                            user={selectedUser}
+                            onStartChat={handleStartChat}
+                            onClose={handleCloseModal}
+                        />
+                    )}
                 </div>
             )}
         </div>
