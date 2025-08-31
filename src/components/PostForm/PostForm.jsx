@@ -137,6 +137,9 @@ useEffect(() => {
             value={formData.tag}
             onChange={handleChange}
           />
+
+        <button>Add a Tag</button>
+
         </div>
 
 
