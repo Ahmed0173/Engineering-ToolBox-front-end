@@ -9,7 +9,7 @@ const NavBar = ({ user, handleSignOut }) => {
   const onSignOut = (e) => {
     e.preventDefault();
     if (handleSignOut) handleSignOut();
-    navigate('/sign-in');
+    navigate('/signin');
   };
 
   const linkClass = ({ isActive }) =>
@@ -30,17 +30,8 @@ const NavBar = ({ user, handleSignOut }) => {
         </button>
 
         <nav className={`nav-links ${open ? 'open' : ''}`}>
-          <NavLink to="/calculator" className={linkClass}>
-            Basic Calculator
-          </NavLink>
-          <NavLink to="/calculation" className={linkClass}>
-            Quick Calculator
-          </NavLink>
-          <NavLink to="/formulas" className={linkClass}>
-            Formulas
-          </NavLink>
-          <NavLink to="/history" className={linkClass}>
-            History
+          <NavLink to="/posts" className={linkClass}>
+            Posts
           </NavLink>
 
           {user ? (
@@ -50,8 +41,8 @@ const NavBar = ({ user, handleSignOut }) => {
             </>
           ) : (
             <>
-              <NavLink to="/sign-in" className="nav-cta">Sign In</NavLink>
-              <NavLink to="/sign-up" className={linkClass}>Sign Up</NavLink>
+              <NavLink to="/signin" className="nav-cta">Sign In</NavLink>
+              <NavLink to="/signup" className={linkClass}>Sign Up</NavLink>
             </>
           )}
         </nav>
