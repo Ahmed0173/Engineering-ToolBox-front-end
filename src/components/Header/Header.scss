@@ -1,0 +1,72 @@
+/* src/components/Header/Header.css */
+
+/* theme just for the navbar */
+.navbar {
+  --nav-bg: #1a0f10;        /* your maroon-ish bar */
+  --nav-fg: #f8fafc;        /* light text */
+  --nav-fg-muted: #cbd5e1;
+  --nav-accent: #3b82f6;    /* active/hover underline */
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--nav-bg);
+  color: var(--nav-fg);
+  box-shadow: 0 1px 0 rgba(0,0,0,.25);
+}
+
+.navbar .nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: .75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* brand */
+.navbar .brand {
+  color: var(--nav-fg);
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+/* links row */
+.navbar .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;              /* <<< fixes the crammed links */
+  flex-wrap: wrap;           /* avoid overflow on small widths */
+}
+
+/* reset default purple/blue link colors inside navbar only */
+.navbar a,
+.navbar a:visited {
+  color: var(--nav-fg);
+  text-decoration: none;
+}
+
+.navbar .nav-link { opacity: .9; }
+.navbar .nav-link:hover { opacity: 1; border-bottom: 2px solid var(--nav-accent); }
+.navbar .nav-link.active { border-bottom: 2px solid var(--nav-accent); }
+
+/* “Sign In/Out” style */
+.navbar .nav-cta {
+  padding: .35rem .7rem;
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: .5rem;
+}
+.navbar .nav-cta:hover { background: rgba(255,255,255,.06); }
+
+.navbar .nav-user { color: var(--nav-fg-muted); }
+
+/* mobile toggle (if you have it) */
+.navbar .menu-toggle { display: none; background: none; border: 0; font-size: 1.2rem; color: var(--nav-fg); }
+
+@media (max-width: 768px) {
+  .navbar .menu-toggle { display: inline-block; }
+  .navbar .nav-links { display: none; flex-direction: column; align-items: flex-start; gap: .75rem; padding-top: .5rem; }
+  .navbar .nav-links.open { display: flex; }
+}
