@@ -210,3 +210,19 @@
     align-self: flex-end;
   }
 }
+
+.create-post-btn {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: #3498db;
+  color: white;
+  border-radius: 25px;
+  text-decoration: none;
+  text-align: center;
+  transition: background-color 0.3s ease;
+    
+  &:hover {
+    background-color: #2980b9;
+  }
+}

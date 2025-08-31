@@ -102,6 +102,10 @@ const PostsPage = () => {
                 <p>Share your engineering knowledge and discoveries</p>
             </div>
 
+            {user && (
+                <Link to="/PostForm" className="create-post-btn">Create Post</Link>
+            )}
+
             {posts.length === 0 ? (
                 <div className="no-posts">
                     <h3>No posts yet</h3>
