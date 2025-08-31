@@ -1,0 +1,100 @@
+.private-chats {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+
+    h2 {
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+    .no-chats {
+        text-align: center;
+        padding: 40px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        color: #666;
+    }
+
+    .chats-list {
+        .chat-item {
+            background: white;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+                background-color: #f5f5f5;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+
+            .chat-avatar {
+                margin-right: 15px;
+                
+                img {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    object-fit: cover;
+                }
+
+                .default-avatar {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                    background: #007bff;
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    font-size: 18px;
+                }
+            }
+
+            .chat-content {
+                flex: 1;
+
+                .chat-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 5px;
+
+                    h3 {
+                        margin: 0;
+                        color: #333;
+                        font-size: 16px;
+                    }
+
+                    .last-message-time {
+                        color: #666;
+                        font-size: 12px;
+                    }
+                }
+
+                .last-message {
+                    margin: 0;
+                    color: #666;
+                    font-size: 14px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    max-width: 300px;
+                }
+            }
+        }
+    }
+}

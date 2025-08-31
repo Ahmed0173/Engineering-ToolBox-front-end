@@ -7,6 +7,7 @@ import './App.scss'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import * as authService from './services/authService'
 import PrivateChats from './components/PrivateChats/PrivateChats.jsx'
+import PrivateChat from './components/PrivateChat/PrivateChat.jsx'
 import UserProfile from './components/UserProfile/UserProfile.jsx'
 import PostDetails from './components/PostDetails/PostDetails.jsx'
 
@@ -66,7 +67,8 @@ export default function App() {
         <Route path="/posts" element={<PostsPage />} />
         <Route path="/posts/:postId" element={<PostDetails />} />
         <Route path="/signup" element={<SignUp handleSignUp={handleSignUp} />} />
-        <Route path="/private-chats" element={user ? <PrivateChats /> : <Navigate to="/signin" replace />} />
+        <Route path="/chats" element={user ? <PrivateChats /> : <Navigate to="/signin" replace />} />
+        <Route path="/chats/:chatId" element={user ? <PrivateChat /> : <Navigate to="/signin" replace />} />
         <Route
           path="/signin"
           element={
@@ -81,8 +83,8 @@ export default function App() {
         {/* Legacy redirects */}
         <Route path="/sign-up" element={<Navigate to="/signup" replace />} />
         <Route path="/sign-in" element={<Navigate to="/signin" replace />} />
+        <Route path="/private-chats" element={<Navigate to="/chats" replace />} />
       </Routes>
     </>
   )
 }
-// backup
