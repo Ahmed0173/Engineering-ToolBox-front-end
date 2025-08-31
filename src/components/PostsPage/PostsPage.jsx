@@ -1,1 +1,2 @@
-//posts page
+//posts page - list of posts
+
