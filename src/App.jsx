@@ -6,8 +6,8 @@ import PostsPage from './components/PostsPage/PostsPage'
 import './App.scss'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import * as authService from './services/authService'
+import UserProfile from './components/UserProfile/UserProfile.jsx'
 import PostDetails from './components/PostDetails/PostDetails.jsx'
-
 
 // Home component
 const Home = () => (
@@ -59,6 +59,7 @@ export default function App() {
     <>
       <Header user={user} handleSignOut={handleSignOut} />
       <Routes>
+        <Route path="/profile" element={<UserProfile user={user} />} />
         <Route path="/" element={<Home />} />
         <Route path="/posts" element={<PostsPage />} />
         <Route path="/posts/:postId" element={<PostDetails />} />
@@ -73,7 +74,7 @@ export default function App() {
             />
           }
         />
-        
+        <Route path="/profile" element={<UserProfile user={user} />} />
         {/* Legacy redirects */}
         <Route path="/sign-up" element={<Navigate to="/signup" replace />} />
         <Route path="/sign-in" element={<Navigate to="/signin" replace />} />

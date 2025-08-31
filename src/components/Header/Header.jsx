@@ -1,6 +1,8 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './Header.scss';
+// ❌ remove this — you don't render the component here
+// import UserProfile from '../UserProfile/UserProfile';
 
 const NavBar = ({ user, handleSignOut }) => {
   const [open, setOpen] = useState(false);
@@ -12,8 +14,11 @@ const NavBar = ({ user, handleSignOut }) => {
     navigate('/signin');
   };
 
-  const linkClass = ({ isActive }) =>
-    `nav-link${isActive ? ' active' : ''}`;
+  const linkClass = ({ isActive }) => `nav-link${isActive ? ' active' : ''}`;
+  const closeMenu = () => setOpen(false);
+
+  // initial for the small avatar dot
+  const initial = (user?.username || user?.email || 'U').trim()[0]?.toUpperCase();
 
   return (
     <header className="navbar">
@@ -30,19 +35,26 @@ const NavBar = ({ user, handleSignOut }) => {
         </button>
 
         <nav className={`nav-links ${open ? 'open' : ''}`}>
-          <NavLink to="/posts" className={linkClass}>
+          <NavLink to="/posts" className={linkClass} onClick={closeMenu}>
             Posts
           </NavLink>
 
           {user ? (
             <>
+              {/* ✅ NEW: Profile link */}
+              <NavLink to="/profile" className={linkClass} onClick={closeMenu}>
+                <span className="nav-profile">
+                  <span className="avatar-dot">{initial}</span>
+                </span>
+              </NavLink>
+
               <span className="nav-user">Hi, {user.username}</span>
               <Link to="/" onClick={onSignOut} className="nav-cta">Sign Out</Link>
             </>
           ) : (
             <>
-              <NavLink to="/signin" className="nav-cta">Sign In</NavLink>
-              <NavLink to="/signup" className={linkClass}>Sign Up</NavLink>
+              <NavLink to="/signin" className="nav-cta" onClick={closeMenu}>Sign In</NavLink>
+              <NavLink to="/signup" className={linkClass} onClick={closeMenu}>Sign Up</NavLink>
             </>
           )}
         </nav>
