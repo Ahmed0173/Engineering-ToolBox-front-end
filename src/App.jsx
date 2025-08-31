@@ -6,8 +6,10 @@ import PostsPage from './components/PostsPage/PostsPage'
 import './App.scss'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import * as authService from './services/authService'
+import PrivateChats from './components/PrivateChats/PrivateChats.jsx'
 import UserProfile from './components/UserProfile/UserProfile.jsx'
 import PostDetails from './components/PostDetails/PostDetails.jsx'
+
 
 // Home component
 const Home = () => (
@@ -64,6 +66,7 @@ export default function App() {
         <Route path="/posts" element={<PostsPage />} />
         <Route path="/posts/:postId" element={<PostDetails />} />
         <Route path="/signup" element={<SignUp handleSignUp={handleSignUp} />} />
+        <Route path="/private-chats" element={user ? <PrivateChats /> : <Navigate to="/signin" replace />} />
         <Route
           path="/signin"
           element={

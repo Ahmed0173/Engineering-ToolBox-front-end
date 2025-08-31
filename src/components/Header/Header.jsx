@@ -1,8 +1,6 @@
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './Header.scss';
-// ❌ remove this — you don't render the component here
-// import UserProfile from '../UserProfile/UserProfile';
 
 const NavBar = ({ user, handleSignOut }) => {
   const [open, setOpen] = useState(false);
@@ -40,23 +38,27 @@ const NavBar = ({ user, handleSignOut }) => {
           </NavLink>
 
           {user ? (
-            <>
-              {/* ✅ NEW: Profile link */}
-              <NavLink to="/profile" className={linkClass} onClick={closeMenu}>
-                <span className="nav-profile">
-                  <span className="avatar-dot">{initial}</span>
-                </span>
-              </NavLink>
+  <>
+    <NavLink to="/private-chats" className={linkClass}>
+      Chats
+    </NavLink>
 
-              <span className="nav-user">Hi, {user.username}</span>
-              <Link to="/" onClick={onSignOut} className="nav-cta">Sign Out</Link>
-            </>
-          ) : (
-            <>
-              <NavLink to="/signin" className="nav-cta" onClick={closeMenu}>Sign In</NavLink>
-              <NavLink to="/signup" className={linkClass} onClick={closeMenu}>Sign Up</NavLink>
-            </>
-          )}
+    {/* ✅ NEW: Profile link */}
+    <NavLink to="/profile" className={linkClass} onClick={closeMenu}>
+      <span className="nav-profile">
+        <span className="avatar-dot">{initial}</span>
+      </span>
+    </NavLink>
+
+    <span className="nav-user">Hi, {user.username}</span>
+    <Link to="/" onClick={onSignOut} className="nav-cta">Sign Out</Link>
+  </>
+) : (
+  <>
+    <NavLink to="/signin" className="nav-cta" onClick={closeMenu}>Sign In</NavLink>
+    <NavLink to="/signup" className={linkClass} onClick={closeMenu}>Sign Up</NavLink>
+  </>
+)}
         </nav>
       </div>
     </header>
