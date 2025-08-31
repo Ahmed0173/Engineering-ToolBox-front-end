@@ -96,7 +96,7 @@ const SignUp = (props) => {
                 </div>
 
                 <br />
-                <button type="submit" className="auth-button" disabled={formIsInvalid}>Sign up</button>
+                <button type="submit" className="auth-button" disabled={!formIsInvalid}>Sign up</button>
             </form>
         </div>
     );
