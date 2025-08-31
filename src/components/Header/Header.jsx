@@ -36,6 +36,7 @@ const NavBar = ({ user, handleSignOut }) => {
 
           {user ? (
             <>
+              <NavLink to="/PostForm" className={linkClass}>Make a post</NavLink>
               <span className="nav-user">Hi, {user.username}</span>
               <Link to="/" onClick={onSignOut} className="nav-cta">Sign Out</Link>
             </>
