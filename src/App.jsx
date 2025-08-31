@@ -4,11 +4,16 @@ import SignUp from './components/SignUp/SignUp.jsx'
 import SignIn from './components/SignIn/SignIn.jsx'
 import PostsPage from './components/PostsPage/PostsPage'
 import './App.scss'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import * as authService from './services/authService'
 
-// Dummy Home component
-const Home = () => <h1 style={{ padding: '1rem' }}>Engineering ToolBox</h1>
+// Home component
+const Home = () => (
+  <div className="homepage">
+    <h1>Engineering ToolBox</h1>
+    <p>Your comprehensive platform for engineering calculations, formulas, and community knowledge sharing.</p>
+  </div>
+)
 
 export default function App() {
   // User state
@@ -53,9 +58,10 @@ export default function App() {
       <Header user={user} handleSignOut={handleSignOut} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/sign-up" element={<SignUp handleSignUp={handleSignUp} />} />
+        <Route path="/posts" element={<PostsPage />} />
+        <Route path="/signup" element={<SignUp handleSignUp={handleSignUp} />} />
         <Route
-          path="/sign-in"
+          path="/signin"
           element={
             <SignIn
               user={user}
@@ -64,11 +70,11 @@ export default function App() {
             />
           }
         />
-        {/* Add more routes as needed */}
+        
+        {/* Legacy redirects */}
+        <Route path="/sign-up" element={<Navigate to="/signup" replace />} />
+        <Route path="/sign-in" element={<Navigate to="/signin" replace />} />
       </Routes>
-      <div>
-        <PostsPage />
-      </div>
     </>
   )
 }
