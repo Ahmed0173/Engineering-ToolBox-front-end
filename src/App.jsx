@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Header from './components/Header/Header.jsx'
 import SignUp from './components/SignUp/SignUp.jsx'
 import SignIn from './components/SignIn/SignIn.jsx'
 import PostsPage from './components/PostsPage/PostsPage'
 import './App.scss'
 import { Routes, Route } from 'react-router-dom'
+import * as authService from './services/authService'
 
 // Dummy Home component
 const Home = () => <h1 style={{ padding: '1rem' }}>Engineering ToolBox</h1>
@@ -13,24 +14,37 @@ export default function App() {
   // User state
   const [user, setUser] = useState(null)
 
-  // Dummy sign up handler for testing
-  const handleSignUp = async (formData) => {
-    await new Promise((res) => setTimeout(res, 500))
-    return { success: true }
-  }
+  // Check for existing user on app startup
+  useEffect(() => {
+    const existingUser = authService.getUser()
+    if (existingUser) {
+      setUser(existingUser)
+    }
+  }, [])
 
-  // Example sign in handler
-  const handleSignIn = async (formData) => {
+  // Real sign up handler using authService
+  const handleSignUp = async (formData) => {
     try {
-      // Replace with real API logic later
-      setUser({ username: formData.username, email: formData.email })
+      const user = await authService.signUp(formData)
+      setUser(user)
       return { success: true }
     } catch (err) {
       return { success: false, message: err.message }
     }
   }
 
+  // Real sign in handler using authService
+  const handleSignIn = async (formData) => {
+    try {
+      const user = await authService.signIn(formData)
+      setUser(user)
+    } catch (err) {
+      throw new Error('Sign in failed. Please check your credentials.')
+    }
+  }
+
   const handleSignOut = () => {
+    localStorage.removeItem('token')
     setUser(null)
   }
 

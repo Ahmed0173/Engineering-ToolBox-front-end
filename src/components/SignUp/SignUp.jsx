@@ -39,7 +39,7 @@ const SignUp = (props) => {
 
   let formIsInvalid = true
 
-  if (formData.username && formData.password && formData.password === formData.passwordConf) {
+  if (formData.username && formData.email && formData.password && formData.password === formData.passwordConf) {
     formIsInvalid = false
   }
 
@@ -69,6 +69,7 @@ const SignUp = (props) => {
             name="email" 
             onChange={handleChange}
             placeholder="email@provider.com"
+            required
           />
         </div>
         

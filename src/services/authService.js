@@ -34,14 +34,18 @@ const signIn = async (formData) => {
       body: JSON.stringify(formData)
     })
     const data = await res.json()
+    
+    if (!res.ok) {
+      throw new Error(data.err || 'Sign in failed')
+    }
+    
     if (data.token) {
       localStorage.setItem('token', data.token)
       const decodedToken = JSON.parse(atob(data.token.split('.')[1]))
       return decodedToken
     }
-
   } catch (err) {
-    console.log(err)
+    throw err
   }
 }
 
@@ -55,8 +59,13 @@ const getUser = () => {
   }
 }
 
+const signOut = () => {
+  localStorage.removeItem('token')
+}
+
 export {
   signUp,
   signIn,
   getUser,
+  signOut,
 }
