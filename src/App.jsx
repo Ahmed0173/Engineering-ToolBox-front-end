@@ -52,7 +52,8 @@ export default function App() {
       const user = await authService.signIn(formData)
       setUser(user)
     } catch (err) {
-      throw new Error('Sign in failed. Please check your credentials.')
+      // Pass through the original error message from the server
+      throw err
     }
   }
 
@@ -96,7 +97,7 @@ export default function App() {
 
         {/* Private Routes (require authentication) */}
         <Route path="/users/profile" element={<UserProfile user={user} />} />
-        <Route path="/posts/new" element={ user ? (<PostForm handleAddPost={handleAddPost} handleUpdatePost={handleUpdatePost} />) : (<Navigate to="/auth/signin" replace />) } />
+        <Route path="/posts/new" element={user ? (<PostForm handleAddPost={handleAddPost} handleUpdatePost={handleUpdatePost} />) : (<Navigate to="/auth/signin" replace />)} />
         <Route path="/chats" element={user ? <PrivateChats /> : <Navigate to="/auth/signin" replace />} />
         <Route path="/chats/:chatId" element={user ? <PrivateChat /> : <Navigate to="/auth/signin" replace />} />
 
