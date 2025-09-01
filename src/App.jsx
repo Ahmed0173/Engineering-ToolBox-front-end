@@ -3,7 +3,8 @@ import Header from './components/Header/Header.jsx'
 import SignUp from './components/SignUp/SignUp.jsx'
 import SignIn from './components/SignIn/SignIn.jsx'
 import PostsPage from './components/PostsPage/PostsPage'
-import PostForm from './components/postForm/postForm.jsx'
+import PostForm from './components/PostForm/PostForm.jsx'
+import HomePage from './components/HomePage/HomePage.jsx'
 import './App.scss'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import * as authService from './services/authService'
@@ -13,15 +14,6 @@ import PrivateChat from './components/PrivateChat/PrivateChat.jsx'
 import UserProfile from './components/UserProfile/UserProfile.jsx'
 import PostDetails from './components/PostDetails/PostDetails.jsx'
 import { createPost, updatePost } from './services/postService.js'
-
-
-// Home component
-const Home = () => (
-  <div className="homepage">
-    <h1>Engineering ToolBox</h1>
-    <p>Your comprehensive platform for engineering calculations, formulas, and community knowledge sharing.</p>
-  </div>
-)
 
 export default function App() {
   // User state
@@ -89,7 +81,7 @@ export default function App() {
       <Header user={user} handleSignOut={handleSignOut} />
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<HomePage user={user} />} />
         <Route path="/auth/signup" element={<SignUp handleSignUp={handleSignUp} />} />
         <Route path="/auth/signin" element={<SignIn user={user} handleSignIn={handleSignIn} handleSignOut={handleSignOut} />} />
         <Route path="/posts" element={<PostsPage />} />
