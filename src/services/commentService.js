@@ -3,7 +3,8 @@ const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/comments`
 // Get all comments for a specific post
 const getCommentsByPostId = async (postId) => {
   try {
-    const res = await fetch(`${BASE_URL}/${postId}`)
+    // Add populate parameter to get author information
+    const res = await fetch(`${BASE_URL}/${postId}?populate=author`)
     
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`)
@@ -12,7 +13,6 @@ const getCommentsByPostId = async (postId) => {
     const data = await res.json()
     return data
   } catch (err) {
-    console.error('Error fetching comments:', err)
     throw err
   }
 }
@@ -39,7 +39,6 @@ const createComment = async (postId, commentData) => {
 
         return await res.json()
     } catch (err) {
-        console.error('Error creating comment:', err)
         throw err
     }
 }
@@ -67,7 +66,6 @@ const updateComment = async (postId, commentId, content) => {
     const data = await res.json()
     return data
   } catch (err) {
-    console.error('Error updating comment:', err)
     throw err
   }
 }
@@ -93,7 +91,6 @@ const deleteComment = async (postId, commentId) => {
     const data = await res.json()
     return data
   } catch (err) {
-    console.error('Error deleting comment:', err)
     throw err
   }
 }
@@ -121,7 +118,6 @@ const replyToComment = async (postId, commentId, content) => {
     const data = await res.json()
     return data
   } catch (err) {
-    console.error('Error creating reply:', err)
     throw err
   }
 }

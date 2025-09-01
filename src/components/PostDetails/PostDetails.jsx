@@ -33,7 +33,11 @@ export default function PostDetails() {
     const [showDeleteModal, setShowDeleteModal] = useState(false)
 
 
-    useEffect(() => { setUser(getUser()) }, [])
+    useEffect(() => { 
+        const userData = getUser()
+        console.log('User data in PostDetails:', userData)
+        setUser(userData) 
+    }, [])
 
     useEffect(() => {
         let ignore = false

@@ -3,8 +3,7 @@ import {
     getCommentsByPostId,
     createComment,
     updateComment,
-    deleteComment,
-    replyToComment
+    deleteComment
 } from '../../services/commentService'
 import './Comments.scss'
 
@@ -13,12 +12,61 @@ const Comments = ({ postId, currentUser }) => {
     const [newComment, setNewComment] = useState('')
     const [editingComment, setEditingComment] = useState(null)
     const [editContent, setEditContent] = useState('')
-    const [replyingTo, setReplyingTo] = useState(null)
-    const [replyContent, setReplyContent] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
 
-    React.useEffect(() => {
+    // Helper function to get author display name
+    const getAuthorDisplayName = (comment) => {
+        if (comment.author && typeof comment.author === 'object' && comment.author.username) {
+            return comment.author.username
+        }
+        if (comment.username) {
+            return comment.username
+        }
+        if (comment.author && typeof comment.author === 'object') {
+            if (comment.author.name) {
+                return comment.author.name
+            }
+            if (comment.author.displayName) {
+                return comment.author.displayName
+            }
+        }
+        if (currentUser && currentUser.username &&
+            (comment.author === currentUser._id || 
+             comment.author === currentUser.id ||
+             (typeof comment.author === 'string' && comment.author === currentUser._id))) {
+            return currentUser.username
+        }
+        if (currentUser && currentUser.username) {
+            const possibleUserIds = [currentUser._id, currentUser.id, currentUser.userId]
+            const commentAuthorId = typeof comment.author === 'object' ? 
+                (comment.author._id || comment.author.id || comment.author.userId) : comment.author
+            if (possibleUserIds.some(id => id && String(id) === String(commentAuthorId))) {
+                return currentUser.username
+            }
+        }
+        if (comment.authorName) {
+            return comment.authorName
+        }
+        if (comment.authorUsername) {
+            return comment.authorUsername
+        }
+        return 'Anonymous'
+    }
+
+    // Helper function to check if current user owns the comment
+    const isCommentOwner = (comment) => {
+        if (!currentUser) return false
+        if (comment.author && typeof comment.author === 'object') {
+            return comment.author._id === currentUser._id
+        }
+        if (typeof comment.author === 'string') {
+            return comment.author === currentUser._id
+        }
+        return false
+    }
+
+    useEffect(() => {
         fetchComments()
     }, [postId])
 
@@ -28,7 +76,6 @@ const Comments = ({ postId, currentUser }) => {
             const fetchedComments = await getCommentsByPostId(postId)
             setComments(fetchedComments)
         } catch (err) {
-            console.error('Error fetching comments:', err)
             setError('Failed to load comments')
         } finally {
             setLoading(false)
@@ -49,19 +96,18 @@ const Comments = ({ postId, currentUser }) => {
         }
 
         try {
-            // Include author information in the comment data
             const commentData = {
                 content: trimmedComment,
-                author: currentUser._id,
-                username: currentUser.username
+                author: currentUser._id || currentUser.id,
+                username: currentUser.username, // Include as fallback
+                authorName: currentUser.username, // Additional fallback
+                authorUsername: currentUser.username // Another fallback
             }
-
-            const comment = await createComment(postId, commentData)
+            await createComment(postId, commentData)
             await fetchComments()
             setNewComment('')
             setError('')
         } catch (err) {
-            console.error('Error posting comment:', err)
             setError('Failed to post comment')
         }
     }
@@ -73,13 +119,12 @@ const Comments = ({ postId, currentUser }) => {
             const updatedComment = await updateComment(postId, commentId, {
                 content: editContent
             })
-            setComments(comments.map(c =>
+            setComments(comments.map(c => 
                 c._id === commentId ? updatedComment : c
             ))
             setEditingComment(null)
             setEditContent('')
         } catch (err) {
-            console.error('Error editing comment:', err)
             setError('Failed to edit comment')
         }
     }
@@ -91,7 +136,6 @@ const Comments = ({ postId, currentUser }) => {
             await deleteComment(postId, commentId)
             setComments(comments.filter(c => c._id !== commentId))
         } catch (err) {
-            console.error('Error deleting comment:', err)
             setError('Failed to delete comment')
         }
     }
@@ -125,7 +169,7 @@ const Comments = ({ postId, currentUser }) => {
                         <div key={comment._id} className="comment">
                             <div className="comment-header">
                                 <span className="comment-author">
-                                    {comment.author?.username || 'Anonymous'}
+                                    {getAuthorDisplayName(comment)}
                                 </span>
                                 <span className="comment-date">
                                     {new Date(comment.createdAt).toLocaleDateString()}
@@ -156,7 +200,7 @@ const Comments = ({ postId, currentUser }) => {
                                 <p className="comment-content">{comment.content}</p>
                             )}
 
-                            {currentUser && currentUser._id === comment.author?._id && (
+                            {isCommentOwner(comment) && (
                                 <div className="comment-actions">
                                     <button
                                         onClick={() => {
