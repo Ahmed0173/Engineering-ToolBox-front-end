@@ -28,7 +28,7 @@ const HomePage = ({ user }) => {
                         <div className="home-hero-text">
                             <h1 className="home-hero-text-heading">
                                 Engineering Excellence,
-                                <br />
+
                                 One Calculation at a Time.
                             </h1>
                             <div className="home-hero-text-subheading">

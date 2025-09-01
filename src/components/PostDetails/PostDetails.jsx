@@ -31,7 +31,7 @@ export default function PostDetails() {
     const [user, setUser] = useState(null)
     const [busy, setBusy] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
-    
+
 
     useEffect(() => { setUser(getUser()) }, [])
 
@@ -75,13 +75,13 @@ export default function PostDetails() {
     }
 
     const handleConfirmDelete = async () => {
-        try { 
+        try {
             setBusy(true)
             await deletePost(post._id)
             setShowDeleteModal(false)
             navigate('/posts')
-        } finally { 
-            setBusy(false) 
+        } finally {
+            setBusy(false)
         }
     }
 

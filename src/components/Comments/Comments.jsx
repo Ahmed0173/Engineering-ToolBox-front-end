@@ -35,45 +35,45 @@ const Comments = ({ postId, currentUser }) => {
         }
     }
 
-const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!currentUser) {
-        setError('Please sign in to comment')
-        return
-    }
-
-    const trimmedComment = newComment.trim()
-    if (!trimmedComment) {
-        setError('Comment cannot be empty')
-        return
-    }
-
-    try {
-        // Include author information in the comment data
-        const commentData = {
-            content: trimmedComment,
-            author: currentUser._id,
-            username: currentUser.username
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        if (!currentUser) {
+            setError('Please sign in to comment')
+            return
         }
-        
-        const comment = await createComment(postId, commentData)
-        await fetchComments()
-        setNewComment('')
-        setError('')
-    } catch (err) {
-        console.error('Error posting comment:', err)
-        setError('Failed to post comment')
+
+        const trimmedComment = newComment.trim()
+        if (!trimmedComment) {
+            setError('Comment cannot be empty')
+            return
+        }
+
+        try {
+            // Include author information in the comment data
+            const commentData = {
+                content: trimmedComment,
+                author: currentUser._id,
+                username: currentUser.username
+            }
+
+            const comment = await createComment(postId, commentData)
+            await fetchComments()
+            setNewComment('')
+            setError('')
+        } catch (err) {
+            console.error('Error posting comment:', err)
+            setError('Failed to post comment')
+        }
     }
-}
 
     const handleEdit = async (commentId) => {
         if (!editContent.trim()) return
-        
+
         try {
-            const updatedComment = await updateComment(postId, commentId, { 
-                content: editContent 
+            const updatedComment = await updateComment(postId, commentId, {
+                content: editContent
             })
-            setComments(comments.map(c => 
+            setComments(comments.map(c =>
                 c._id === commentId ? updatedComment : c
             ))
             setEditingComment(null)
@@ -99,7 +99,7 @@ const handleSubmit = async (e) => {
     return (
         <div className="comments-section">
             <h3>Comments</h3>
-            
+
             <form onSubmit={handleSubmit} className="comment-form">
                 <textarea
                     value={newComment}
@@ -109,8 +109,8 @@ const handleSubmit = async (e) => {
                     required
                 />
                 {error && <p className="error-message">{error}</p>}
-                <button 
-                    type="submit" 
+                <button
+                    type="submit"
                     disabled={!currentUser || !newComment.trim()}
                 >
                     Post Comment
@@ -144,8 +144,8 @@ const handleSubmit = async (e) => {
                                     />
                                     <div className="button-group">
                                         <button type="submit">Save</button>
-                                        <button 
-                                            type="button" 
+                                        <button
+                                            type="button"
                                             onClick={() => setEditingComment(null)}
                                         >
                                             Cancel

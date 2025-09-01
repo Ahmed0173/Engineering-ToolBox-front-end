@@ -3,7 +3,7 @@ import './DeletePostModal.scss';
 
 const DeletePostModal = ({ post, onConfirmDelete, onClose }) => {
     if (!post) return null;
-    
+
     return (
         <div className="delete-post-modal-overlay">
             <div className="delete-post-modal">
