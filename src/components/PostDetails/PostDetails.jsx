@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { getPostById, likePost, savePost, deletePost } from '../../services/postService'
 import { getUser } from '../../services/authService'
 import DeletePostModal from './DeletePostModal'
+import Comments from '../Comments/Comments'
 import './PostDetails.scss'
 
 const sameId = (a, b) => {
@@ -30,6 +31,7 @@ export default function PostDetails() {
     const [user, setUser] = useState(null)
     const [busy, setBusy] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    
 
     useEffect(() => { setUser(getUser()) }, [])
 
@@ -140,6 +142,10 @@ export default function PostDetails() {
                     </div>
                 </footer>
             </article>
+
+            <section className="pd-comments">
+                <Comments postId={postId} currentUser={user} />
+            </section>
 
             {showDeleteModal && (
                 <DeletePostModal
