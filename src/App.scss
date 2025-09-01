@@ -9,7 +9,11 @@
 body {
   font-family: 'Montserrat', sans-serif;
   background-color: #f8f4ee;
-  background-image: url('./paper.png');
+  background-image: url('./images/BackGround.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-attachment: fixed;
   color: #310B0B;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
