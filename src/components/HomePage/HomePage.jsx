@@ -11,13 +11,10 @@ const HomePage = ({ user }) => {
                         <p className="home-subheader">Ready to solve some engineering challenges today?</p>
                         <div className="home-quick-actions">
                             <Link to="/posts" className="home-action-btn">
-                                Browse Posts
+                                Discussions
                             </Link>
                             <Link to="/calculator" className="home-action-btn">
                                 Calculator
-                            </Link>
-                            <Link to="/posts" className="home-action-btn">
-                                Discussions
                             </Link>
                             <Link to="/chats" className="home-action-btn">
                                 Private Chats
