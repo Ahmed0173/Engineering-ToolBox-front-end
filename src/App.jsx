@@ -14,6 +14,7 @@ import PrivateChat from './components/PrivateChat/PrivateChat.jsx'
 import UserProfile from './components/UserProfile/UserProfile.jsx'
 import PostDetails from './components/PostDetails/PostDetails.jsx'
 import { createPost, updatePost } from './services/postService.js'
+import ProfileEdit from './components/UserProfile/ProfileEdit.jsx'
 
 export default function App() {
   // User state
@@ -84,6 +85,7 @@ export default function App() {
         <Route path="/" element={<HomePage user={user} />} />
         <Route path="/auth/signup" element={<SignUp handleSignUp={handleSignUp} />} />
         <Route path="/auth/signin" element={<SignIn user={user} handleSignIn={handleSignIn} handleSignOut={handleSignOut} />} />
+        <Route path="/profile/edit" element={ user ? <ProfileEdit user={user} onUpdated={setUser} /> : <Navigate to="/signin" replace />  }/>
         <Route path="/posts" element={<PostsPage />} />
         <Route path="/posts/:postId" element={<PostDetails />} />
 

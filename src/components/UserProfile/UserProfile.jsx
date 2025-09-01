@@ -5,15 +5,21 @@ function UserProfile({ user }) {
     const navigate = useNavigate()
     const [counts, setCounts] = useState({ mine: 0, saved: 0, liked: 0, loading: true })
 
-    useEffect(() => {
-        if (!user?._id) return
-        const qMine = fetch(`/api/posts?author=${user._id}`).then(r => r.ok ? r.json() : [])
-        const qSaved = fetch(`/api/posts?savedBy=${user._id}`).then(r => r.ok ? r.json() : [])
-        const qLiked = fetch(`/api/posts?likedBy=${user._id}`).then(r => r.ok ? r.json() : [])
-        Promise.all([qMine, qSaved, qLiked])
-            .then(([m = [], s = [], l = []]) => setCounts({ mine: m.length, saved: s.length, liked: l.length, loading: false }))
-            .catch(() => setCounts(c => ({ ...c, loading: false })))
-    }, [user?._id])
+ useEffect(() => {
+  if (!user?._id) return
+  const API = (import.meta.env.VITE_BACK_END_SERVER_URL || 'http://localhost:3000').replace(/\/$/, '')
+
+  const qMine  = fetch(`${API}/posts?author=${user._id}`).then(r => r.ok ? r.json() : [])
+  const qSaved = fetch(`${API}/posts?savedBy=${user._id}`).then(r => r.ok ? r.json() : [])
+  const qLiked = fetch(`${API}/posts?likedBy=${user._id}`).then(r => r.ok ? r.json() : [])
+
+  Promise.all([qMine, qSaved, qLiked])
+    .then(([m = [], s = [], l = []]) =>
+      setCounts({ mine: m.length, saved: s.length, liked: l.length, loading: false })
+    )
+    .catch(() => setCounts(c => ({ ...c, loading: false })))
+}, [user?._id])
+
 
     if (!user) {
         return (

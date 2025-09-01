@@ -1,13 +1,17 @@
 const BASE_URL = `${import.meta.env.VITE_BACK_END_SERVER_URL}/posts`
 
-const getAllPosts = async () => {
+// ✅ NOW ACCEPTS FILTERS: { author, likedBy, savedBy, page, limit }
+const getAllPosts = async (filters = {}) => {
   try {
-    const res = await fetch(BASE_URL)
-    
+    const url = new URL(BASE_URL)
+    Object.entries(filters).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== '') url.searchParams.append(k, v)
+    })
+
+    const res = await fetch(url.toString())
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`)
     }
-    
     const data = await res.json()
     return data
   } catch (err) {
@@ -32,8 +36,6 @@ const createPost = async (formData) => {
     const token = localStorage.getItem('token')
     if (!token) throw new Error('No authentication token found')
 
-
-    
     const res = await fetch(`${BASE_URL}/new`, {
       method: 'POST',
       headers: {
