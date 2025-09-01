@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import './PostsPage.scss';
 import PrivateChatModal from './PrivateChatModal'; // Import the modal component (to be created)
 import { startChat } from '../../services/chatService';
+import DeletePostModal from '../PostDetails/DeletePostModal'
 
 const PostsPage = () => {
     const [posts, setPosts] = useState([]);
@@ -13,6 +14,8 @@ const PostsPage = () => {
     const [user, setUser] = useState(null);
     const [showChatModal, setShowChatModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [postToDelete, setPostToDelete] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -67,23 +70,6 @@ const PostsPage = () => {
         }
     };
 
-    const handleDelete = async (postId) => {
-        if (!user) {
-            alert('Please sign in to delete posts');
-            return;
-        }
-
-        if (window.confirm('Are you sure you want to delete this post?')) {
-            try {
-                await deletePost(postId);
-                setPosts(posts.filter(post => post._id !== postId));
-            } catch (err) {
-                console.error('Error deleting post:', err);
-                alert('Failed to delete post');
-            }
-        }
-    };
-
     const formatDate = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -124,6 +110,30 @@ const PostsPage = () => {
         setSelectedUser(null);
     };
 
+    const handleDeleteClick = (post) => {
+        setPostToDelete(post);
+        setShowDeleteModal(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!postToDelete) return;
+
+        try {
+            await deletePost(postToDelete._id);
+            setPosts(posts.filter(post => post._id !== postToDelete._id));
+            setShowDeleteModal(false);
+            setPostToDelete(null);
+        } catch (err) {
+            console.error('Error deleting post:', err);
+            alert('Failed to delete post');
+        }
+    };
+
+    const handleCloseDeleteModal = () => {
+        setShowDeleteModal(false);
+        setPostToDelete(null);
+    };
+
     if (loading) return <div className="loading">Loading posts...</div>;
     if (error) return <div className="error">{error}</div>;
 
@@ -159,12 +169,13 @@ const PostsPage = () => {
                                     <span className="post-date">{formatDate(post.createdAt)}</span>
                                 </div>
                                 {isUserPost(post) && (
-                                    <div className="post-actions">
+                                    <div className="pd-actions">
                                         <button
-                                            className="delete-btn"
-                                            onClick={() => handleDelete(post._id)}
+                                            className="pd-delete"
+                                            onClick={() => handleDeleteClick(post)}
+                                            title="Delete post"
                                         >
-                                            🗑️
+                                            🗑️ Delete
                                         </button>
                                     </div>
                                 )}
@@ -219,6 +230,13 @@ const PostsPage = () => {
                         />
                     )}
                 </div>
+            )}
+            {showDeleteModal && postToDelete && (
+                <DeletePostModal
+                    post={postToDelete}
+                    onConfirmDelete={handleConfirmDelete}
+                    onClose={handleCloseDeleteModal}
+                />
             )}
         </div>
     );
