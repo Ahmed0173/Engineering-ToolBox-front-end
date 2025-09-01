@@ -3,8 +3,7 @@ import {
     getCommentsByPostId,
     createComment,
     updateComment,
-    deleteComment,
-    replyToComment
+    deleteComment
 } from '../../services/commentService'
 import './Comments.scss'
 
@@ -13,25 +12,17 @@ const Comments = ({ postId, currentUser }) => {
     const [newComment, setNewComment] = useState('')
     const [editingComment, setEditingComment] = useState(null)
     const [editContent, setEditContent] = useState('')
-    const [replyingTo, setReplyingTo] = useState(null)
-    const [replyContent, setReplyContent] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
 
     // Helper function to get author display name
     const getAuthorDisplayName = (comment) => {
-        
-        // If author is populated with user object and has username
         if (comment.author && typeof comment.author === 'object' && comment.author.username) {
             return comment.author.username
         }
-        
-        // If we have stored username in the comment itself (fallback)
         if (comment.username) {
             return comment.username
         }
-        
-        // If author is populated object but has different username field
         if (comment.author && typeof comment.author === 'object') {
             if (comment.author.name) {
                 return comment.author.name
@@ -40,73 +31,49 @@ const Comments = ({ postId, currentUser }) => {
                 return comment.author.displayName
             }
         }
-        
-        // If author is just an ID string and matches current user
         if (currentUser && currentUser.username &&
             (comment.author === currentUser._id || 
              comment.author === currentUser.id ||
              (typeof comment.author === 'string' && comment.author === currentUser._id))) {
             return currentUser.username
         }
-        
-        // Check if currentUser has different ID field names
         if (currentUser && currentUser.username) {
             const possibleUserIds = [currentUser._id, currentUser.id, currentUser.userId]
             const commentAuthorId = typeof comment.author === 'object' ? 
                 (comment.author._id || comment.author.id || comment.author.userId) : comment.author
-            
-            
             if (possibleUserIds.some(id => id && String(id) === String(commentAuthorId))) {
                 return currentUser.username
             }
         }
-        
-        // Additional fallback - check if the comment has authorName or authorUsername field
         if (comment.authorName) {
             return comment.authorName
         }
-        
         if (comment.authorUsername) {
             return comment.authorUsername
         }
-        
-        // Check if author is a string and we can find username in a different way
-        if (typeof comment.author === 'string' && currentUser) {
-        }
-    
         return 'Anonymous'
     }
 
     // Helper function to check if current user owns the comment
     const isCommentOwner = (comment) => {
         if (!currentUser) return false
-        
-        // Check if author is populated object
         if (comment.author && typeof comment.author === 'object') {
             return comment.author._id === currentUser._id
         }
-        
-        // Check if author is just an ID string
         if (typeof comment.author === 'string') {
             return comment.author === currentUser._id
         }
-        
         return false
     }
 
-    React.useEffect(() => {
+    useEffect(() => {
         fetchComments()
     }, [postId])
-
-    React.useEffect(() => {
-    }, [currentUser])
 
     const fetchComments = async () => {
         try {
             setLoading(true)
             const fetchedComments = await getCommentsByPostId(postId)
-            fetchedComments.forEach((comment, index) => {
-            })
             setComments(fetchedComments)
         } catch (err) {
             setError('Failed to load comments')
@@ -115,12 +82,13 @@ const Comments = ({ postId, currentUser }) => {
         }
     }
 
-const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!currentUser) {
-        setError('Please sign in to comment')
-        return
-    }
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        if (!currentUser) {
+            setError('Please sign in to comment')
+            return
+        }
+
 
     // Add this function with your other handlers
 const handleReply = async (commentId) => {
@@ -147,32 +115,30 @@ const handleReply = async (commentId) => {
         return
     }
 
-    try {
-        // Send comment data to backend with multiple fallback fields for username
-        const commentData = {
-            content: trimmedComment,
-            author: currentUser._id || currentUser.id,
-            username: currentUser.username, // Include as fallback
-            authorName: currentUser.username, // Additional fallback
-            authorUsername: currentUser.username // Another fallback
+        try {
+            const commentData = {
+                content: trimmedComment,
+                author: currentUser._id || currentUser.id,
+                username: currentUser.username, // Include as fallback
+                authorName: currentUser.username, // Additional fallback
+                authorUsername: currentUser.username // Another fallback
+            }
+            await createComment(postId, commentData)
+            await fetchComments()
+            setNewComment('')
+            setError('')
+        } catch (err) {
+            setError('Failed to post comment')
         }
-        
-        
-        const comment = await createComment(postId, commentData)
-        
-        await fetchComments() // Refresh to get properly populated data
-        setNewComment('')
-        setError('')
-    } catch (err) {
-        setError('Failed to post comment')
     }
-}
 
     const handleEdit = async (commentId) => {
         if (!editContent.trim()) return
-        
+
         try {
-            const updatedComment = await updateComment(postId, commentId, editContent)
+            const updatedComment = await updateComment(postId, commentId, {
+                content: editContent
+            })
             setComments(comments.map(c => 
                 c._id === commentId ? updatedComment : c
             ))
@@ -216,6 +182,7 @@ const handleReply = async (commentId) => {
     }
 
     return (
+
     <div className="comments-section">
         <h3>Comments</h3>
         
@@ -235,6 +202,7 @@ const handleReply = async (commentId) => {
                 Post Comment
             </button>
         </form>
+
 
         {loading ? (
             <div className="loading">Loading comments...</div>

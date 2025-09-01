@@ -11,8 +11,8 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
   const { postId } = useParams();
 
   const initialState = {
-   content: "",
-   tag: "",
+    content: "",
+    tag: "",
   };
 
   const [formData, setFormData] = useState(initialState);
@@ -48,57 +48,57 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
     }
   };
 
-const handleSubmit = async (evt) => {
-  evt.preventDefault();
-  setLoading(true);
-  try {
-    const postData = formData
-
-    console.log('About to submit:', postData);
-    
-    let result;
-    if (postId) {
-      result = await handleUpdatePost(postId, postData);
-    } else {
-      // Fix: Use the prop directly
-      result = await handleAddPost(postData);
-    }
-    
-    if (!result) {
-      throw new Error('No result returned from server');
-    }
-    
-    navigate("/posts");
-  } catch (error) {
-    console.error("Form submission failed:", error);
-    // Improve error message
-    alert(error.message || 'Failed to create post. Please try again.');
-  } finally {
-    setLoading(false);
-  }
-};
-    
-
-
-
-
-useEffect(() => {
-  const fetchPost = async () => {
-    if (!postId) return;
-    setFetching(true);
+  const handleSubmit = async (evt) => {
+    evt.preventDefault();
+    setLoading(true);
     try {
-      const postData = await PostService.getPostById(postId);
-      if (!postData) throw new Error('Post not found');
-      setFormData(postData);
+      const postData = formData
+
+      console.log('About to submit:', postData);
+
+      let result;
+      if (postId) {
+        result = await handleUpdatePost(postId, postData);
+      } else {
+        // Fix: Use the prop directly
+        result = await handleAddPost(postData);
+      }
+
+      if (!result) {
+        throw new Error('No result returned from server');
+      }
+
+      navigate("/posts");
     } catch (error) {
-      console.error("Failed to fetch post", error);
-      alert('Failed to fetch post details');
+      console.error("Form submission failed:", error);
+      // Improve error message
+      alert(error.message || 'Failed to create post. Please try again.');
     } finally {
-      setFetching(false);
+      setLoading(false);
     }
   };
-  fetchPost();
-}, [postId]);
+
+
+
+
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      if (!postId) return;
+      setFetching(true);
+      try {
+        const postData = await PostService.getPostById(postId);
+        if (!postData) throw new Error('Post not found');
+        setFormData(postData);
+      } catch (error) {
+        console.error("Failed to fetch post", error);
+        alert('Failed to fetch post details');
+      } finally {
+        setFetching(false);
+      }
+    };
+    fetchPost();
+  }, [postId]);
 
   if (fetching) {
     return (
@@ -113,7 +113,7 @@ useEffect(() => {
       <h1>{postId ? "Edit Post" : "Create New Post"}</h1>
       <form className="vintage-form" onSubmit={handleSubmit}>
 
-        
+
         <div className="form-group">
           <label htmlFor="content-input">Post Content</label>
           <textarea
@@ -138,7 +138,7 @@ useEffect(() => {
             onChange={handleChange}
           />
 
-        <button>Add a Tag</button>
+          <button>Add a Tag</button>
 
         </div>
 
