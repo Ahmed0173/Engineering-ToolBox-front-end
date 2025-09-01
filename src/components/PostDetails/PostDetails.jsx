@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { getPostById, likePost, savePost, deletePost } from '../../services/postService'
 import { getUser } from '../../services/authService'
+import './PostDetails.scss'
 
 const sameId = (a, b) => {
     if (!a || !b) return false
@@ -77,19 +78,27 @@ export default function PostDetails() {
     return (
         <div className="post-details">
             <div className="pd-topbar">
-                <Link to="/posts" className="back-link">← Back to Posts</Link>
+                <Link to="/posts" className="back-link">← Back to Discussions</Link>
+            </div>
+
+            <div className="discussion-thread">
+                Engineering Discussion Thread
             </div>
 
             <article className="pd-card">
                 <header className="pd-header">
-                    <div className="pd-author">
-                        <div className="pd-author-name">@{post.author?.username || 'Unknown'}</div>
-                        <div className="pd-date">{formatDate(post.createdAt)}</div>
+                    <div className="pd-author" data-initial={post.author?.username?.charAt(0)?.toUpperCase() || 'U'}>
+                        <div className="pd-author-info">
+                            <div className="pd-author-name">@{post.author?.username || 'Unknown'}</div>
+                            <div className="pd-date">{formatDate(post.createdAt)}</div>
+                        </div>
                     </div>
 
                     {isOwner && (
                         <div className="pd-actions">
-                            <button className="pd-delete" onClick={handleDelete} disabled={busy || loading} title="Delete post">🗑️</button>
+                            <button className="pd-delete" onClick={handleDelete} disabled={busy || loading} title="Delete post">
+                                🗑️ Delete
+                            </button>
                         </div>
                     )}
                 </header>
@@ -100,13 +109,19 @@ export default function PostDetails() {
 
                 {Array.isArray(post.tags) && post.tags.length > 0 && (
                     <section className="pd-tags">
-                        {post.tags.map((t, i) => <span key={i} className="tag">#{t}</span>)}
+                        {post.tags.map((t, i) => <span key={i} className="tag">{t}</span>)}
                     </section>
                 )}
 
                 <footer className="pd-footer">
-                    <button className={`pd-like ${isLiked ? 'liked' : ''}`} onClick={handleLike} disabled={busy || loading}>❤️ {likeCount(post)}</button>
-                    <button className="pd-save" onClick={handleSave} disabled={busy || loading}>🔖 Save</button>
+                    <div className="engagement-stats">
+                        <button className={`pd-like ${isLiked ? 'liked' : ''}`} onClick={handleLike} disabled={busy || loading}>
+                            ❤️ {isLiked ? 'Liked' : 'Like'} ({likeCount(post)})
+                        </button>
+                        <button className="pd-save" onClick={handleSave} disabled={busy || loading}>
+                            🔖 Save for Later
+                        </button>
+                    </div>
                 </footer>
             </article>
         </div>
