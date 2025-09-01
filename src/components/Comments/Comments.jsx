@@ -49,9 +49,15 @@ const handleSubmit = async (e) => {
     }
 
     try {
-        // Pass content as a string directly
-        const comment = await createComment(postId, trimmedComment)
-        setComments(prev => [...prev, comment])
+        // Include author information in the comment data
+        const commentData = {
+            content: trimmedComment,
+            author: currentUser._id,
+            username: currentUser.username
+        }
+        
+        const comment = await createComment(postId, commentData)
+        await fetchComments()
         setNewComment('')
         setError('')
     } catch (err) {

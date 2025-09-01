@@ -18,7 +18,7 @@ const getCommentsByPostId = async (postId) => {
 }
 
 // Create a new comment on a post
-const createComment = async (postId, content) => {
+const createComment = async (postId, commentData) => {
     try {
         const token = localStorage.getItem('token')
         if (!token) throw new Error('No authentication token found')
@@ -29,7 +29,7 @@ const createComment = async (postId, content) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ content }) // Wrap content in an object
+            body: JSON.stringify(commentData)
         })
 
         if (!res.ok) {
