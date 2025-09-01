@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { getPostById, likePost, savePost, deletePost } from '../../services/postService'
 import { getUser } from '../../services/authService'
+import DeletePostModal from './DeletePostModal'
 import './PostDetails.scss'
 
 const sameId = (a, b) => {
@@ -28,6 +29,7 @@ export default function PostDetails() {
     const [error, setError] = useState(null)
     const [user, setUser] = useState(null)
     const [busy, setBusy] = useState(false)
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
 
     useEffect(() => { setUser(getUser()) }, [])
 
@@ -65,10 +67,24 @@ export default function PostDetails() {
         try { setBusy(true); setPost(await savePost(post._id)) } finally { setBusy(false) }
     }
 
-    const handleDelete = async () => {
+    const handleDeleteClick = () => {
         if (!user || !isOwner || !post) return
-        if (!window.confirm('Delete this post?')) return
-        try { setBusy(true); await deletePost(post._id); navigate('/posts') } finally { setBusy(false) }
+        setShowDeleteModal(true)
+    }
+
+    const handleConfirmDelete = async () => {
+        try { 
+            setBusy(true)
+            await deletePost(post._id)
+            setShowDeleteModal(false)
+            navigate('/posts')
+        } finally { 
+            setBusy(false) 
+        }
+    }
+
+    const handleCloseDeleteModal = () => {
+        setShowDeleteModal(false)
     }
 
     if (loading) return <div className="post-details loading">Loading...</div>
@@ -96,7 +112,7 @@ export default function PostDetails() {
 
                     {isOwner && (
                         <div className="pd-actions">
-                            <button className="pd-delete" onClick={handleDelete} disabled={busy || loading} title="Delete post">
+                            <button className="pd-delete" onClick={handleDeleteClick} disabled={busy || loading} title="Delete post">
                                 🗑️ Delete
                             </button>
                         </div>
@@ -124,6 +140,14 @@ export default function PostDetails() {
                     </div>
                 </footer>
             </article>
+
+            {showDeleteModal && (
+                <DeletePostModal
+                    post={post}
+                    onConfirmDelete={handleConfirmDelete}
+                    onClose={handleCloseDeleteModal}
+                />
+            )}
         </div>
     )
 }
