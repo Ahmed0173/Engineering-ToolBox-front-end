@@ -19,30 +19,29 @@ const getCommentsByPostId = async (postId) => {
 
 // Create a new comment on a post
 const createComment = async (postId, content) => {
-  try {
-    const token = localStorage.getItem('token')
-    if (!token) throw new Error('No authentication token found')
+    try {
+        const token = localStorage.getItem('token')
+        if (!token) throw new Error('No authentication token found')
 
-    const res = await fetch(`${BASE_URL}/${postId}/new`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({ content })
-    })
+        const res = await fetch(`${BASE_URL}/${postId}/new`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ content }) // Wrap content in an object
+        })
 
-    if (!res.ok) {
-      const errorData = await res.json()
-      throw new Error(errorData.message || 'Failed to create comment')
+        if (!res.ok) {
+            const error = await res.json()
+            throw new Error(error.message || 'Failed to create comment')
+        }
+
+        return await res.json()
+    } catch (err) {
+        console.error('Error creating comment:', err)
+        throw err
     }
-
-    const data = await res.json()
-    return data
-  } catch (err) {
-    console.error('Error creating comment:', err)
-    throw err
-  }
 }
 
 // Update an existing comment
