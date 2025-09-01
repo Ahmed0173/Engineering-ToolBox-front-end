@@ -70,7 +70,7 @@ export default function App() {
 
   const handleUpdatePost = async (postId, postData) => {
     try {
-      const updatedPost = await PostService.update(postId, postData)
+      const updatedPost = await updatePost(postId, postData)
       return updatedPost
     } catch (error) {
       throw new Error('Failed to update post')
@@ -85,9 +85,10 @@ export default function App() {
         <Route path="/" element={<HomePage user={user} />} />
         <Route path="/auth/signup" element={<SignUp handleSignUp={handleSignUp} />} />
         <Route path="/auth/signin" element={<SignIn user={user} handleSignIn={handleSignIn} handleSignOut={handleSignOut} />} />
-        <Route path="/profile/edit" element={ user ? <ProfileEdit user={user} onUpdated={setUser} /> : <Navigate to="/signin" replace />  }/>
+        <Route path="/profile/edit" element={user ? <ProfileEdit user={user} onUpdated={setUser} /> : <Navigate to="/signin" replace />} />
         <Route path="/posts" element={<PostsPage />} />
         <Route path="/posts/:postId" element={<PostDetails />} />
+        <Route path="/posts/:postId/edit" element={user ? (<PostForm handleAddPost={handleAddPost} handleUpdatePost={handleUpdatePost} />) : (<Navigate to="/auth/signin" replace />)} />
 
         {/* Private Routes (require authentication) */}
         <Route path="/users/profile" element={<UserProfile user={user} />} />
