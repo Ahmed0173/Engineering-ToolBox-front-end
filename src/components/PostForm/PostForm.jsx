@@ -87,7 +87,7 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
       if (!postId) return;
       setFetching(true);
       try {
-        const postData = await PostService.getPostById(postId);
+        const postData = await getPostById(postId);
         if (!postData) throw new Error('Post not found');
         setFormData(postData);
       } catch (error) {
