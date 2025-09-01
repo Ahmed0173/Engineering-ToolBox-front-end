@@ -14,6 +14,21 @@
         color: #666;
     }
 
+    .starting-chat-notice {
+        background: #e3f2fd;
+        border: 1px solid #2196f3;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        text-align: center;
+
+        p {
+            margin: 0;
+            color: #1976d2;
+            font-size: 1rem;
+        }
+    }
+
     .no-chats {
         text-align: center;
         padding: 40px;
@@ -37,12 +52,12 @@
             &:hover {
                 background-color: #f5f5f5;
                 transform: translateY(-1px);
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             }
 
             .chat-avatar {
                 margin-right: 15px;
-                
+
                 img {
                     width: 50px;
                     height: 50px;

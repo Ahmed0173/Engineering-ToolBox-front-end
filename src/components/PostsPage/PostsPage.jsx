@@ -145,9 +145,18 @@ const PostsPage = () => {
         setPostToDelete(null);
     };
 
-    const handleStartChat = (selectedUser) => {
-        // Navigate to chat page with the selected user
-        navigate(`/chats`, { state: { selectedUser } });
+    const handleStartChat = () => {
+        if (!selectedUser) return;
+
+        // Create a clean user object with only the necessary data for navigation
+        const cleanUserData = {
+            _id: selectedUser._id,
+            username: selectedUser.username,
+            email: selectedUser.email
+        };
+
+        // Navigate to chat page with the clean user data
+        navigate(`/chats`, { state: { selectedUser: cleanUserData } });
         setShowChatModal(false);
         setSelectedUser(null);
     };
