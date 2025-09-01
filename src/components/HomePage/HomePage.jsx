@@ -1,26 +1,189 @@
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 import "./HomePage.scss";
 
 const HomePage = ({ user }) => {
+    const [recentPosts, setRecentPosts] = useState([]);
+    const [userStats, setUserStats] = useState({
+        postsCount: 0,
+        commentsCount: 0,
+        likesReceived: 0
+    });
+
+    // Mock data for demonstration - replace with actual API calls
+    useEffect(() => {
+        if (user) {
+            // Simulate fetching recent posts
+            setRecentPosts([
+                {
+                    _id: '1',
+                    content: 'How to calculate beam deflection in steel structures?',
+                    author: { username: 'EngineerMike' },
+                    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+                    likes_count: 12,
+                    tags: ['structural', 'steel']
+                },
+                {
+                    _id: '2',
+                    content: 'Best practices for HVAC system design in commercial buildings',
+                    author: { username: 'HVACExpert' },
+                    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+                    likes_count: 8,
+                    tags: ['hvac', 'commercial']
+                },
+                {
+                    _id: '3',
+                    content: 'Circuit analysis for complex electrical networks',
+                    author: { username: 'ElectricalGuru' },
+                    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+                    likes_count: 15,
+                    tags: ['electrical', 'circuits']
+                }
+            ]);
+
+            // Simulate user stats
+            setUserStats({
+                postsCount: Math.floor(Math.random() * 20) + 5,
+                commentsCount: Math.floor(Math.random() * 50) + 10,
+                likesReceived: Math.floor(Math.random() * 100) + 25
+            });
+        }
+    }, [user]);
+
+    const formatTimeAgo = (date) => {
+        const now = new Date();
+        const diffInMinutes = Math.floor((now - date) / (1000 * 60));
+
+        if (diffInMinutes < 60) {
+            return `${diffInMinutes}m ago`;
+        } else if (diffInMinutes < 1440) {
+            return `${Math.floor(diffInMinutes / 60)}h ago`;
+        } else {
+            return `${Math.floor(diffInMinutes / 1440)}d ago`;
+        }
+    };
+
     return (
         <main>
             {user ? (
                 <>
+                    {/* Welcome Section */}
                     <section className="home-welcome">
                         <h1 className="home-header">Welcome back, {user.username}!</h1>
                         <p className="home-subheader">Ready to solve some engineering challenges today?</p>
                         <div className="home-quick-actions">
+                            <Link to="/posts/new" className="home-action-btn primary">
+                                ✏️ Create Post
+                            </Link>
                             <Link to="/posts" className="home-action-btn">
-                                Discussions
+                                💬 Browse Posts
                             </Link>
                             <Link to="/calculator" className="home-action-btn">
-                                Calculator
-                            </Link>
-                            <Link to="/chats" className="home-action-btn">
-                                Private Chats
+                                🧮 Calculator
                             </Link>
                         </div>
                     </section>
+
+                    {/* Dashboard Grid */}
+                    <div className="home-dashboard">
+                        {/* User Stats */}
+                        <section className="dashboard-section stats-section">
+                            <h2 className="section-title">Your Activity</h2>
+                            <div className="stats-grid">
+                                <div className="stat-card">
+                                    <div className="stat-icon">📄</div>
+                                    <div className="stat-info">
+                                        <span className="stat-number">{userStats.postsCount}</span>
+                                        <span className="stat-label">Posts Created</span>
+                                    </div>
+                                </div>
+                                <div className="stat-card">
+                                    <div className="stat-icon">💬</div>
+                                    <div className="stat-info">
+                                        <span className="stat-number">{userStats.commentsCount}</span>
+                                        <span className="stat-label">Comments</span>
+                                    </div>
+                                </div>
+                                <div className="stat-card">
+                                    <div className="stat-icon">❤️</div>
+                                    <div className="stat-info">
+                                        <span className="stat-number">{userStats.likesReceived}</span>
+                                        <span className="stat-label">Likes Received</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* Quick Tools */}
+                        <section className="dashboard-section tools-section">
+                            <h2 className="section-title">Quick Tools</h2>
+                            <div className="tools-grid">
+                                <Link to="/calculator" className="tool-card">
+                                    <div className="tool-icon">🧮</div>
+                                    <h3>Basic Calculator</h3>
+                                    <p>Perform quick calculations</p>
+                                </Link>
+                                <Link to="/calculator/formula" className="tool-card">
+                                    <div className="tool-icon">📐</div>
+                                    <h3>Formula Calculator</h3>
+                                    <p>Engineering formulas</p>
+                                </Link>
+                                <Link to="/chats" className="tool-card">
+                                    <div className="tool-icon">💬</div>
+                                    <h3>Private Chats</h3>
+                                    <p>Connect with engineers</p>
+                                </Link>
+                                <Link to="/posts?saved=1" className="tool-card">
+                                    <div className="tool-icon">🔖</div>
+                                    <h3>Saved Posts</h3>
+                                    <p>Your bookmarks</p>
+                                </Link>
+                            </div>
+                        </section>
+
+                        {/* Recent Community Activity */}
+                        <section className="dashboard-section recent-posts-section">
+                            <div className="section-header">
+                                <h2 className="section-title">Recent Community Posts</h2>
+                                <Link to="/posts" className="view-all-link">View All →</Link>
+                            </div>
+                            <div className="recent-posts">
+                                {recentPosts.map(post => (
+                                    <Link to={`/posts/${post._id}`} key={post._id} className="post-preview">
+                                        <div className="post-content">
+                                            <h4>{post.content}</h4>
+                                            <div className="post-meta">
+                                                <span className="post-author">@{post.author.username}</span>
+                                                <span className="post-time">{formatTimeAgo(post.createdAt)}</span>
+                                                <span className="post-likes">❤️ {post.likes_count}</span>
+                                            </div>
+                                            {post.tags && (
+                                                <div className="post-tags">
+                                                    {post.tags.map(tag => (
+                                                        <span key={tag} className="tag">#{tag}</span>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+                        </section>
+
+                        {/* Engineering Tips */}
+                        <section className="dashboard-section tips-section">
+                            <h2 className="section-title">Daily Engineering Tip</h2>
+                            <div className="tip-card">
+                                <div className="tip-icon">💡</div>
+                                <div className="tip-content">
+                                    <h3>Factor of Safety</h3>
+                                    <p>Always apply appropriate safety factors in structural design. For static loads, use 1.5-2.0, and for dynamic loads, consider 3.0-4.0 depending on the application and material properties.</p>
+                                </div>
+                            </div>
+                        </section>
+
+
+                    </div>
                 </>
             ) : (
                 <>
