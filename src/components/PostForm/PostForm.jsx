@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { createPost, getPostById, updatePost } from "../../services/postService";
+import "./PostForm.scss";
 
 const Loader = () => <div className="loader">Loading...</div>;
 
@@ -16,12 +17,37 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
   };
 
   const [formData, setFormData] = useState(initialState);
+  const [tags, setTags] = useState([]);
+  const [currentTag, setCurrentTag] = useState("");
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
 
   const handleChange = (evt) => {
     setFormData({ ...formData, [evt.target.name]: evt.target.value });
+  };
+
+  const handleTagInputChange = (evt) => {
+    setCurrentTag(evt.target.value);
+  };
+
+  const addTag = () => {
+    if (currentTag.trim() && !tags.includes(currentTag.trim())) {
+      const newTag = currentTag.trim().startsWith('#') ? currentTag.trim() : `#${currentTag.trim()}`;
+      setTags([...tags, newTag]);
+      setCurrentTag("");
+    }
+  };
+
+  const removeTag = (tagToRemove) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
+  const handleKeyPress = (evt) => {
+    if (evt.key === 'Enter') {
+      evt.preventDefault();
+      addTag();
+    }
   };
 
   const handleImageUpload = async (evt) => {
@@ -52,7 +78,11 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
     evt.preventDefault();
     setLoading(true);
     try {
-      const postData = formData
+      // Include tags in the form data
+      const postData = {
+        ...formData,
+        tags: tags
+      };
 
       console.log('About to submit:', postData);
 
@@ -90,6 +120,10 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
         const postData = await getPostById(postId);
         if (!postData) throw new Error('Post not found');
         setFormData(postData);
+        // Set tags if they exist in the post data
+        if (postData.tags && Array.isArray(postData.tags)) {
+          setTags(postData.tags);
+        }
       } catch (error) {
         console.error("Failed to fetch post", error);
         alert('Failed to fetch post details');
@@ -128,18 +162,49 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="tag-input">add a #tag</label>
-          <textarea
-            name="tag"
-            id="tag-input"
-            className="vintage-textarea"
-            placeholder="Add a #"
-            value={formData.tag}
-            onChange={handleChange}
-          />
+          <label htmlFor="tag-input">Add Tags</label>
+          <div className="tag-input-container">
+            <input
+              type="text"
+              name="tag"
+              id="tag-input"
+              className="vintage-input"
+              placeholder="Enter a tag (without #)"
+              value={currentTag}
+              onChange={handleTagInputChange}
+              onKeyPress={handleKeyPress}
+            />
+            <button
+              type="button"
+              className="vintage-button tag-button"
+              onClick={addTag}
+              disabled={!currentTag.trim()}
+            >
+              Add Tag
+            </button>
+          </div>
 
-          <button>Add a Tag</button>
-
+          {/* Display current tags */}
+          {tags.length > 0 && (
+            <div className="tags-display">
+              <p>Current tags:</p>
+              <div className="tags-list">
+                {tags.map((tag, index) => (
+                  <span key={index} className="tag-chip">
+                    {tag}
+                    <button
+                      type="button"
+                      className="tag-remove"
+                      onClick={() => removeTag(tag)}
+                      aria-label={`Remove ${tag} tag`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
 

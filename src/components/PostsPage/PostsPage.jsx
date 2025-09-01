@@ -221,7 +221,7 @@ const PostsPage = () => {
                                 {post.tags && post.tags.length > 0 && (
                                     <div className="post-tags">
                                         {post.tags.map((tag, idx) => (
-                                            <span key={idx} className="tag">#{tag}</span>
+                                            <span key={idx} className="tag">{tag}</span>
                                         ))}
                                     </div>
                                 )}
