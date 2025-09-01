@@ -33,6 +33,17 @@ const PrivateChats = () => {
         return chat.participants.find(p => p._id !== currentUserId)
     }
 
+    const getInitial = (user) => {
+        return (user?.username || user?.email || 'U').trim()[0]?.toUpperCase()
+    }
+
+    const hasValidAvatar = (user) => {
+        return user?.avatar &&
+            user.avatar !== 'assets/default.jpg' &&
+            user.avatar.trim() !== '' &&
+            !user.avatar.includes('default.jpg')
+    }
+
     if (loading) {
         return <div className="loading">Loading chats...</div>
     }
@@ -56,11 +67,11 @@ const PrivateChats = () => {
                                 onClick={() => handleChatClick(chat._id)}
                             >
                                 <div className="chat-avatar">
-                                    {otherUser?.avatar ? (
+                                    {hasValidAvatar(otherUser) ? (
                                         <img src={otherUser.avatar} alt={otherUser.username} />
                                     ) : (
                                         <div className="default-avatar">
-                                            {otherUser?.username?.[0]?.toUpperCase() || '?'}
+                                            {getInitial(otherUser)}
                                         </div>
                                     )}
                                 </div>

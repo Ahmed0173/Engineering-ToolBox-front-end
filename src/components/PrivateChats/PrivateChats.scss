@@ -37,12 +37,12 @@
             &:hover {
                 background-color: #f5f5f5;
                 transform: translateY(-1px);
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
             }
 
             .chat-avatar {
                 margin-right: 15px;
-                
+
                 img {
                     width: 50px;
                     height: 50px;
@@ -60,7 +60,8 @@
                     align-items: center;
                     justify-content: center;
                     font-weight: bold;
-                    font-size: 18px;
+                    font-size: 20px;
+                    text-transform: uppercase;
                 }
             }
 
