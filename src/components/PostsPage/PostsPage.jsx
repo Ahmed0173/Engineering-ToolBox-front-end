@@ -12,6 +12,7 @@ const PostsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [user, setUser] = useState(null);
+    const [savedPosts, setSavedPosts] = useState(new Set());
     const [showChatModal, setShowChatModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -44,6 +45,23 @@ const PostsPage = () => {
 
             const postsData = await postService.getAllPosts(filters);
             setPosts(Array.isArray(postsData) ? postsData : []);
+
+            // Track which posts are saved by the current user
+            if (user?._id && Array.isArray(postsData)) {
+                const userSavedPosts = new Set();
+                postsData.forEach(post => {
+                    if (post.savedBy && Array.isArray(post.savedBy)) {
+                        const isSaved = post.savedBy.some(savedUser =>
+                            (typeof savedUser === 'object' && savedUser._id === user._id) ||
+                            (typeof savedUser === 'string' && savedUser === user._id)
+                        );
+                        if (isSaved) {
+                            userSavedPosts.add(post._id);
+                        }
+                    }
+                });
+                setSavedPosts(userSavedPosts);
+            }
         } catch (err) {
             setError('Failed to fetch posts');
             console.error('Error fetching posts:', err);
@@ -76,7 +94,18 @@ const PostsPage = () => {
 
         try {
             await postService.savePost(postId);
-            // Note: You might want to add visual feedback here
+
+            // Toggle the saved state locally
+            setSavedPosts(prev => {
+                const newSavedPosts = new Set(prev);
+                if (newSavedPosts.has(postId)) {
+                    newSavedPosts.delete(postId);
+                } else {
+                    newSavedPosts.add(postId);
+                }
+                return newSavedPosts;
+            });
+
             console.log('Post save/unsave action completed');
         } catch (err) {
             console.error('Error saving post:', err);
@@ -85,7 +114,8 @@ const PostsPage = () => {
         }
     };
 
-    const handleDeleteClick = (post) => {
+    const handleDeleteClick = (post, e) => {
+        e.stopPropagation(); // Prevent card click
         setPostToDelete(post);
         setShowDeleteModal(true);
     };
@@ -136,16 +166,32 @@ const PostsPage = () => {
         return user && post.author && post.author._id === user._id;
     };
 
-    const handleAuthorClick = (author) => {
+    const handleAuthorClick = (author, e) => {
+        e.stopPropagation(); // Prevent card click
         if (author && user && author._id !== user._id) {
             setSelectedUser(author);
             setShowChatModal(true);
         }
     };
 
-    const handleEditClick = (post) => {
+    const handleEditClick = (post, e) => {
+        e.stopPropagation(); // Prevent card click
         // Navigate to edit form with post ID
         navigate(`/posts/${post._id}/edit`);
+    };
+
+    const handleLikeClick = (postId, e) => {
+        e.stopPropagation(); // Prevent card click
+        handleLike(postId);
+    };
+
+    const handleSaveClick = (postId, e) => {
+        e.stopPropagation(); // Prevent card click
+        handleSave(postId);
+    };
+
+    const handleCardClick = (postId) => {
+        navigate(`/posts/${postId}`);
     };
 
     const isPostLiked = (post) => {
@@ -153,6 +199,10 @@ const PostsPage = () => {
         return Array.isArray(post.likes)
             ? post.likes.some(like => like._id === user._id || like === user._id)
             : false;
+    };
+
+    const isPostSaved = (postId) => {
+        return savedPosts.has(postId);
     };
 
     if (loading) return <div className="loading">Loading posts...</div>;
@@ -175,12 +225,16 @@ const PostsPage = () => {
             ) : (
                 <div className="posts-container">
                     {posts.map((post) => (
-                        <div key={post._id} className="post-card">
+                        <div
+                            key={post._id}
+                            className="post-card clickable-card"
+                            onClick={() => handleCardClick(post._id)}
+                        >
                             <div className="post-header">
                                 <div className="post-author">
                                     <span
                                         className="author-name clickable"
-                                        onClick={() => handleAuthorClick(post.author)}
+                                        onClick={(e) => handleAuthorClick(post.author, e)}
                                         style={{
                                             cursor: post.author && user && post.author._id !== user._id ? 'pointer' : 'default',
                                             color: '#0077cc',
@@ -195,7 +249,7 @@ const PostsPage = () => {
                                     <div className="post-actions">
                                         <button
                                             className="edit-btn"
-                                            onClick={() => handleEditClick(post)}
+                                            onClick={(e) => handleEditClick(post, e)}
                                             title="Edit post"
                                             aria-label={`Edit post: ${post.content.substring(0, 50)}...`}
                                         >
@@ -203,7 +257,7 @@ const PostsPage = () => {
                                         </button>
                                         <button
                                             className="delete-btn"
-                                            onClick={() => handleDeleteClick(post)}
+                                            onClick={(e) => handleDeleteClick(post, e)}
                                             title="Delete post"
                                             aria-label={`Delete post: ${post.content.substring(0, 50)}...`}
                                         >
@@ -213,31 +267,33 @@ const PostsPage = () => {
                                 )}
                             </div>
 
-                            <Link to={`/posts/${post._id}`} className="post-link">
-                                <div className="post-content">
-                                    <p>{post.content}</p>
-                                </div>
+                            <div className="post-content">
+                                <p>{post.content}</p>
+                            </div>
 
-                                {post.tags && post.tags.length > 0 && (
-                                    <div className="post-tags">
-                                        {post.tags.map((tag, idx) => (
-                                            <span key={idx} className="tag">{tag}</span>
-                                        ))}
-                                    </div>
-                                )}
-                            </Link>
+                            {post.tags && post.tags.length > 0 && (
+                                <div className="post-tags">
+                                    {post.tags.map((tag, idx) => (
+                                        <span key={idx} className="tag">{tag}</span>
+                                    ))}
+                                </div>
+                            )}
 
                             <div className="post-footer">
                                 <div className="post-stats">
                                     <button
                                         className={`like-btn ${isPostLiked(post) ? 'liked' : ''}`}
-                                        onClick={() => handleLike(post._id)}
+                                        onClick={(e) => handleLikeClick(post._id, e)}
                                     >
                                         ❤️ {post.likes_count ?? (Array.isArray(post.likes) ? post.likes.length : 0)}
                                     </button>
 
-                                    <button className="save-btn" onClick={() => handleSave(post._id)}>
-                                        🔖 Save
+                                    <button
+                                        className={`save-btn ${isPostSaved(post._id) ? 'saved' : ''}`}
+                                        onClick={(e) => handleSaveClick(post._id, e)}
+                                        title={isPostSaved(post._id) ? 'Remove from saved' : 'Save post'}
+                                    >
+                                        {isPostSaved(post._id) ? '🔖 Saved' : '🔖 Save'}
                                     </button>
                                 </div>
                             </div>

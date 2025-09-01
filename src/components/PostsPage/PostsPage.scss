@@ -62,7 +62,22 @@
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease;
+  transition: all 0.3s ease;
+
+  &.clickable-card {
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transform: translateY(-2px);
+      border-color: #3498db;
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+  }
 
   &:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -206,10 +221,24 @@
 
   .save-btn {
     color: #7f8c8d;
+    transition: all 0.2s ease;
 
     &:hover {
       background-color: #f0f8ff;
       color: #3498db;
+    }
+
+    &.saved {
+      background-color: #3498db;
+      color: white;
+      font-weight: bold;
+      border: 2px solid #3498db;
+
+      &:hover {
+        background-color: #2980b9;
+        border-color: #2980b9;
+        color: white;
+      }
     }
   }
 }
