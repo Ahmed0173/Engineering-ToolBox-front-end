@@ -17,6 +17,9 @@ const PostsPage = () => {
     const [selectedUser, setSelectedUser] = useState(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [postToDelete, setPostToDelete] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [hasMorePosts, setHasMorePosts] = useState(true);
+    const [loadingMore, setLoadingMore] = useState(false);
     const navigate = useNavigate();
     const [params] = useSearchParams();
 
@@ -33,23 +36,37 @@ const PostsPage = () => {
         fetchPosts();
     }, [mine, liked, saved, user]); // Add user to dependencies since filters depend on user._id
 
-    const fetchPosts = async () => {
+    const fetchPosts = async (page = 1, append = false) => {
         try {
-            setLoading(true);
+            if (!append) {
+                setLoading(true);
+            } else {
+                setLoadingMore(true);
+            }
             setError(null);
 
-            const filters = {};
+            const filters = { page, limit: 10 };
             if (mine && user?._id) filters.author = user._id;
             if (liked && user?._id) filters.likedBy = user._id;
             if (saved && user?._id) filters.savedBy = user._id;
 
             const postsData = await postService.getAllPosts(filters);
-            setPosts(Array.isArray(postsData) ? postsData : []);
+            const newPosts = Array.isArray(postsData) ? postsData : [];
+
+            if (append) {
+                setPosts(prevPosts => [...prevPosts, ...newPosts]);
+            } else {
+                setPosts(newPosts);
+                setCurrentPage(1);
+            }
+
+            // Check if there are more posts to load
+            setHasMorePosts(newPosts.length === 10);
 
             // Track which posts are saved by the current user
-            if (user?._id && Array.isArray(postsData)) {
-                const userSavedPosts = new Set();
-                postsData.forEach(post => {
+            if (user?._id && Array.isArray(newPosts)) {
+                const userSavedPosts = new Set(savedPosts);
+                newPosts.forEach(post => {
                     if (post.savedBy && Array.isArray(post.savedBy)) {
                         const isSaved = post.savedBy.some(savedUser =>
                             (typeof savedUser === 'object' && savedUser._id === user._id) ||
@@ -67,7 +84,15 @@ const PostsPage = () => {
             console.error('Error fetching posts:', err);
         } finally {
             setLoading(false);
+            setLoadingMore(false);
         }
+    };
+
+    const loadMorePosts = async () => {
+        if (!hasMorePosts || loadingMore) return;
+        const nextPage = currentPage + 1;
+        setCurrentPage(nextPage);
+        await fetchPosts(nextPage, true);
     };
 
     const handleLike = async (postId) => {
@@ -308,6 +333,18 @@ const PostsPage = () => {
                             </div>
                         </div>
                     ))}
+
+                    {hasMorePosts && (
+                        <div className="load-more-container">
+                            <button
+                                className="load-more-btn"
+                                onClick={loadMorePosts}
+                                disabled={loadingMore}
+                            >
+                                {loadingMore ? 'Loading...' : 'Load More Posts'}
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
 
