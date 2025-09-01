@@ -122,6 +122,25 @@ const handleSubmit = async (e) => {
         return
     }
 
+    // Add this function with your other handlers
+const handleReply = async (commentId) => {
+    if (!replyContent.trim()) return
+    
+    try {
+        await replyToComment(postId, commentId, { 
+            content: replyContent,
+            author: currentUser._id,
+            username: currentUser.username
+        })
+        await fetchComments() // Refresh to get updated replies
+        setReplyingTo(null)
+        setReplyContent('')
+    } catch (err) {
+        console.error('Error posting reply:', err)
+        setError('Failed to post reply')
+    }
+}
+
     const trimmedComment = newComment.trim()
     if (!trimmedComment) {
         setError('Comment cannot be empty')
@@ -164,6 +183,27 @@ const handleSubmit = async (e) => {
         }
     }
 
+      const handleAddComment = async (commentData) => {
+    try {
+      const newComment = await itemService.createComment(commentData, itemId);
+      setItem((prevItem) => ({
+        ...prevItem,
+        comments: [...prevItem.comments, newComment],
+      }));
+    } catch (err) {
+      console.error("Error adding comment:", err);
+    }
+  };
+
+  const handleDeleteItem = async () => {
+    try {
+      await itemService.deleteItem(itemId);
+      navigate("/items");
+    } catch (err) {
+      console.error("Error deleting item:", err);
+    }
+  };
+
     const handleDelete = async (commentId) => {
         if (!window.confirm('Are you sure you want to delete this comment?')) return
 
@@ -176,86 +216,61 @@ const handleSubmit = async (e) => {
     }
 
     return (
-        <div className="comments-section">
-            <h3>Comments</h3>
-            
-            <form onSubmit={handleSubmit} className="comment-form">
-                <textarea
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder={currentUser ? "Write a comment..." : "Please sign in to comment"}
-                    disabled={!currentUser}
-                    required
-                />
-                {error && <p className="error-message">{error}</p>}
-                <button 
-                    type="submit" 
-                    disabled={!currentUser || !newComment.trim()}
-                >
-                    Post Comment
-                </button>
-            </form>
+    <div className="comments-section">
+        <h3>Comments</h3>
+        
+        <form onSubmit={handleSubmit} className="comment-form">
+            <textarea
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                placeholder={currentUser ? "Write a comment..." : "Please sign in to comment"}
+                disabled={!currentUser}
+                required
+            />
+            {error && <p className="error-message">{error}</p>}
+            <button 
+                type="submit" 
+                disabled={!currentUser || !newComment.trim()}
+            >
+                Post Comment
+            </button>
+        </form>
 
-            {loading ? (
-                <div className="loading">Loading comments...</div>
-            ) : (
-                <div className="comments-list">
-                    {comments.map(comment => (
-                        <div key={comment._id} className="comment">
-                            <div className="comment-header">
-                                <span className="comment-author">
-                                    {getAuthorDisplayName(comment)}
-                                </span>
-                                <span className="comment-date">
-                                    {new Date(comment.createdAt).toLocaleDateString()}
-                                </span>
-                            </div>
-
-                            {editingComment === comment._id ? (
-                                <form onSubmit={(e) => {
-                                    e.preventDefault()
-                                    handleEdit(comment._id)
-                                }} className="edit-form">
-                                    <textarea
-                                        value={editContent}
-                                        onChange={(e) => setEditContent(e.target.value)}
-                                        required
-                                    />
-                                    <div className="button-group">
-                                        <button type="submit">Save</button>
-                                        <button 
-                                            type="button" 
-                                            onClick={() => setEditingComment(null)}
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
-                                </form>
-                            ) : (
-                                <p className="comment-content">{comment.content}</p>
-                            )}
-
-                            {isCommentOwner(comment) && (
-                                <div className="comment-actions">
-                                    <button
-                                        onClick={() => {
-                                            setEditingComment(comment._id)
-                                            setEditContent(comment.content)
-                                        }}
-                                    >
-                                        Edit
-                                    </button>
-                                    <button onClick={() => handleDelete(comment._id)}>
-                                        Delete
-                                    </button>
-                                </div>
-                            )}
+        {loading ? (
+            <div className="loading">Loading comments...</div>
+        ) : (
+            <div className="comments-list">
+                {comments.map(comment => (
+                    <div key={comment._id} className="comment">
+                        <div className="comment-header">
+                            <span className="comment-author">
+                                {getAuthorDisplayName(comment)}
+                            </span>
+                            <span className="comment-date">
+                                {new Date(comment.createdAt).toLocaleDateString()}
+                            </span>
                         </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    )
+                        <p className="comment-content">{comment.content}</p>
+                        {/* <button>edt comment</button> */}
+
+                            <div className="comment-actions">
+                                <button onClick={() => handleDelete(comment._id)}>
+                                    Delete
+                                </button>
+                                <button onClick={() => {
+                                    setEditingComment(comment._id);
+                                    setEditContent(comment.content);
+                                }}>
+                                    Edit
+                                </button>
+                            </div>
+                        
+                    </div>
+                ))}
+            </div>
+        )}
+    </div>
+)
 }
 
 export default Comments
