@@ -1,0 +1,403 @@
+// HomePage.scss - matching existing app color scheme
+.home-welcome {
+    padding: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, #9C3D54 0%, #E2703A 100%);
+    color: white;
+    border-radius: 12px;
+    margin: 2rem;
+    box-shadow: 0 10px 30px rgba(49, 11, 11, 0.2);
+
+    .home-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+        color: white;
+    }
+
+    .home-subheader {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .home-quick-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+
+        .home-action-btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+
+            &:hover {
+                background: #EEB76B;
+                border-color: #EEB76B;
+                transform: translateY(-2px);
+                color: #310B0B;
+            }
+        }
+    }
+}
+
+// Hero Section
+.home-hero {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    padding: 4rem 2rem;
+    min-height: 70vh;
+    background-color: #f8f4ee;
+    background-image: url('/cream-paper.png');
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem 1rem;
+    }
+
+    &-text {
+        flex: 1;
+        max-width: 600px;
+
+        &-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: #9C3D54;
+
+            @media (max-width: 768px) {
+                font-size: 2.5rem;
+            }
+        }
+
+        &-subheading {
+            margin-bottom: 2rem;
+
+            &-para {
+                font-family: 'Montserrat', sans-serif;
+                font-size: 1.2rem;
+                line-height: 1.6;
+                color: #310B0B;
+                margin-bottom: 1rem;
+
+                &:last-child {
+                    font-weight: 600;
+                    color: #9C3D54;
+                }
+            }
+        }
+
+        &-cta {
+            &-btns {
+                display: flex;
+                gap: 1rem;
+                margin-bottom: 1rem;
+
+                @media (max-width: 480px) {
+                    flex-direction: column;
+                }
+
+                &-btnlink {
+                    padding: 1rem 2rem;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                    font-family: 'Montserrat', sans-serif;
+                    transition: all 0.3s ease;
+                    background: #E2703A;
+                    color: white;
+                    border: 2px solid #E2703A;
+
+                    &:hover {
+                        background: #9C3D54;
+                        border-color: #9C3D54;
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 25px rgba(156, 61, 84, 0.3);
+                    }
+
+                    &.home-hero-text-cta-btns-signuplink {
+                        background: transparent;
+                        color: #E2703A;
+
+                        &:hover {
+                            background: #E2703A;
+                            color: white;
+                        }
+                    }
+                }
+            }
+
+            &-link {
+                color: #310B0B;
+                font-size: 0.95rem;
+                font-family: 'Montserrat', sans-serif;
+
+                a {
+                    color: #9C3D54;
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                        color: #E2703A;
+                    }
+                }
+            }
+        }
+    }
+
+    &-imagefigure {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &-placeholder {
+        width: 300px;
+        height: 300px;
+        background: linear-gradient(135deg, #9C3D54 0%, #E2703A 100%);
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 20px 60px rgba(49, 11, 11, 0.15);
+
+        @media (max-width: 768px) {
+            width: 250px;
+            height: 250px;
+        }
+    }
+
+    &-icon {
+        font-size: 4rem;
+        color: white;
+        animation: float 3s ease-in-out infinite;
+
+        &:nth-child(2) {
+            animation-delay: -1s;
+        }
+
+        &:nth-child(3) {
+            animation-delay: -2s;
+        }
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+// Features Section
+.home-features {
+    padding: 4rem 2rem;
+    background-color: #f8f4ee;
+    background-image: url('/cream-paper.png');
+
+    &-text {
+        max-width: 1200px;
+        margin: 0 auto;
+
+        &-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #9C3D54;
+            font-weight: 700;
+        }
+    }
+
+    &-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+}
+
+.home-feature-card {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #EEB76B;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 20px rgba(49, 11, 11, 0.08);
+
+    &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(49, 11, 11, 0.15);
+        border-color: #E2703A;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+        color: #9C3D54;
+        font-weight: 600;
+    }
+
+    p {
+        font-family: 'Montserrat', sans-serif;
+        color: #310B0B;
+        line-height: 1.6;
+    }
+}
+
+// Process Section
+.home-process {
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #310B0B 0%, #9C3D54 100%);
+    color: white;
+
+    &-text {
+        max-width: 800px;
+        margin: 0 auto;
+        text-align: center;
+
+        &-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            font-weight: 700;
+            color: white;
+        }
+    }
+
+    &-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
+
+    &-step {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(238, 183, 107, 0.3);
+
+        &-number {
+            width: 50px;
+            height: 50px;
+            background: #EEB76B;
+            color: #310B0B;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Playfair Display', serif;
+            margin: 0 auto 1rem;
+        }
+
+        p {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+    }
+}
+
+// Testimonials Section
+.home-testimonials {
+    padding: 4rem 2rem;
+    background-color: #f8f4ee;
+    background-image: url('/cream-paper.png');
+    text-align: center;
+
+    &-heading {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        margin-bottom: 3rem;
+        color: #9C3D54;
+        font-weight: 700;
+    }
+
+    &-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto 2rem;
+    }
+
+    &-para {
+        font-family: 'Montserrat', sans-serif;
+        font-size: 1.1rem;
+        color: #310B0B;
+        font-weight: 600;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
+.home-testimonial {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(49, 11, 11, 0.08);
+    border-left: 4px solid #EEB76B;
+    font-style: italic;
+    line-height: 1.6;
+    color: #310B0B;
+    font-family: 'Montserrat', sans-serif;
+
+    cite {
+        display: block;
+        margin-top: 1rem;
+        font-style: normal;
+        font-weight: 600;
+        color: #9C3D54;
+        font-size: 0.9rem;
+    }
+
+    &:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(49, 11, 11, 0.12);
+        border-left-color: #E2703A;
+    }
+}
+
+// General responsive adjustments
+@media (max-width: 480px) {
+    .home-hero-text-heading {
+        font-size: 2rem !important;
+    }
+
+    .home-features-text-heading,
+    .home-process-text-heading,
+    .home-testimonials-heading {
+        font-size: 2rem !important;
+    }
+
+    .home-features,
+    .home-process,
+    .home-testimonials {
+        padding: 2rem 1rem !important;
+    }
+}

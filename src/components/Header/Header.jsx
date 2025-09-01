@@ -53,7 +53,7 @@ const NavBar = ({ user, handleSignOut }) => {
                             <NavLink to="/chats" className={linkClass} onClick={closeMenu}>
                                 Chats
                             </NavLink>
-                            <NavLink to="/PostForm" className={linkClass}>Make a post</NavLink>
+                            <NavLink to="/calculator" className={linkClass} onClick={closeMenu}>Calculator</NavLink>
                             <Link to="/" onClick={onSignOut} className="nav-cta">Sign Out</Link>
                         </>
                     ) : (
