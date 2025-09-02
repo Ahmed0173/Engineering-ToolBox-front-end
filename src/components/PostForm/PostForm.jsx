@@ -144,9 +144,8 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
 
   return (
     <main className="post-form-container">
-      <h1>{postId ? "Edit Post" : "Create New Post"}</h1>
       <form className="vintage-form" onSubmit={handleSubmit}>
-
+        <h2>{postId ? "Edit Post" : "Create New Post"}</h2>
 
         <div className="form-group">
           <label htmlFor="content-input">Post Content</label>
@@ -154,7 +153,7 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
             name="content"
             id="content-input"
             className="vintage-textarea"
-            placeholder="The Posts Content"
+            placeholder="Share your engineering knowledge, ask questions, or start a discussion..."
             value={formData.content}
             onChange={handleChange}
             required
@@ -169,7 +168,7 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
               name="tag"
               id="tag-input"
               className="vintage-input"
-              placeholder="Enter a tag (without #)"
+              placeholder="Enter a tag (e.g. mechanical, electrical, software)"
               value={currentTag}
               onChange={handleTagInputChange}
               onKeyPress={handleKeyPress}
