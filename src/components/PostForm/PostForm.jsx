@@ -144,6 +144,15 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
 
   return (
     <main className="post-form-container">
+      <button
+        type="button"
+        className="back-button"
+        onClick={() => navigate("/posts")}
+        aria-label="Go back to posts"
+      >
+        ← Back to Posts
+      </button>
+
       <form className="vintage-form" onSubmit={handleSubmit}>
         <h2>{postId ? "Edit Post" : "Create New Post"}</h2>
 
@@ -214,7 +223,7 @@ const PostForm = ({ handleAddPost, handleUpdatePost }) => {
             disabled={uploading || loading}
           >
             {loading ? (
-              <div style={{ display: 'flex', alignPosts: 'center', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Loader />
                 <span>Processing...</span>
               </div>

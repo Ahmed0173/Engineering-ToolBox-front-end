@@ -4,6 +4,41 @@
     padding: 2rem;
     position: relative;
 
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #6c757d, #5a6268);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        letter-spacing: 0.02em;
+
+        &:hover {
+            background: linear-gradient(135deg, #5a6268, #495057);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
+        }
+
+        &:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        }
+
+        &:focus {
+            outline: 2px solid #3498db;
+            outline-offset: 2px;
+        }
+    }
+
     .vintage-form {
         background: linear-gradient(135deg, #ffffff 0%, #f8f6f3 100%);
         padding: 3rem;
