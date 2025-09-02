@@ -1,8 +1,9 @@
 // SignIn form
 
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import NavBar from '../Header/Header'
+import './SignIn.scss'
 
 const SignIn = (props) => {
     const navigate = useNavigate()
@@ -107,13 +108,14 @@ const SignIn = (props) => {
 
     return (
         <div className="auth-container">
-            <div className="vintage-decoration top-right"> ҉ </div>
+            <div className="vintage-decoration top-right"> ❋ </div>
             <div className="auth-header">
                 <h1>Welcome Back!</h1>
+                <p>Sign in to access your engineering toolbox</p>
                 {error && <div className="error-message general-error">{error}</div>}
             </div>
             <form onSubmit={handleSubmit} className="auth-form">
-                <div className="form-group">
+                <div className={`form-group ${fieldErrors.username ? 'invalid' : formData.username ? 'valid' : ''}`}>
                     <label>Username:</label>
                     <input
                         type="text"
@@ -126,20 +128,26 @@ const SignIn = (props) => {
                     {fieldErrors.username && <div className="error-message">{fieldErrors.username}</div>}
                 </div>
 
-                <div className="form-group">
+                <div className={`form-group ${fieldErrors.password ? 'invalid' : formData.password ? 'valid' : ''}`}>
                     <label>Password:</label>
                     <input
                         type="password"
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        placeholder="••••••••"
+                        placeholder="Enter your password"
                         required
                     />
                     {fieldErrors.password && <div className="error-message">{fieldErrors.password}</div>}
                 </div>
-                <br />
-                <button type="submit" className="auth-button" disabled={formIsInvalid}>Sign In</button>
+
+                <div className="link-container">
+                    If you don't have an account? <Link to="/SignUp">Sign up</Link>
+                </div>
+
+                <button type="submit" className="auth-button" disabled={formIsInvalid}>
+                    Sign In
+                </button>
             </form>
         </div>
     );

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
+import './SignUp.scss'
 
 const SignUp = (props) => {
     const navigate = useNavigate()
@@ -123,63 +124,73 @@ const SignUp = (props) => {
 
     return (
         <div className="auth-container">
-            <div className="vintage-decoration top-right"> ҉</div>
+            <div className="vintage-decoration top-right"> ❋ </div>
             <div className="auth-header">
                 <h1>Join Our Community</h1>
+                <p>Create your account to start engineering</p>
                 {error && <div className="error-message general-error">{error}</div>}
             </div>
 
             <form onSubmit={handleSubmit} className="auth-form">
-                <div className="form-group">
+                <div className={`form-group ${fieldErrors.username ? 'invalid' : formData.username ? 'valid' : ''}`}>
                     <label>Username:</label>
                     <input
                         type="text"
                         name="username"
+                        value={formData.username}
                         onChange={handleChange}
-                        placeholder="Choose a username"
+                        placeholder="Choose a unique username"
                         required
                     />
                     {fieldErrors.username && <div className="error-message">{fieldErrors.username}</div>}
                 </div>
 
-                <div className="form-group">
+                <div className={`form-group ${fieldErrors.email ? 'invalid' : formData.email ? 'valid' : ''}`}>
                     <label>Email:</label>
                     <input
                         type="email"
                         name="email"
+                        value={formData.email}
                         onChange={handleChange}
-                        placeholder="email@provider.com"
+                        placeholder="your.email@example.com"
                         required
                     />
                     {fieldErrors.email && <div className="error-message">{fieldErrors.email}</div>}
                 </div>
 
-                <div className="form-group">
+                <div className={`form-group ${fieldErrors.password ? 'invalid' : formData.password ? 'valid' : ''}`}>
                     <label>Password:</label>
                     <input
                         type="password"
                         name="password"
+                        value={formData.password}
                         onChange={handleChange}
-                        placeholder="••••••••"
+                        placeholder="Create a secure password"
                         required
                     />
                     {fieldErrors.password && <div className="error-message">{fieldErrors.password}</div>}
                 </div>
 
-                <div className="form-group">
+                <div className={`form-group ${fieldErrors.passwordConf ? 'invalid' : formData.passwordConf && formData.password === formData.passwordConf ? 'valid' : ''}`}>
                     <label>Confirm Password:</label>
                     <input
                         type="password"
                         name="passwordConf"
+                        value={formData.passwordConf}
                         onChange={handleChange}
-                        placeholder="••••••••"
+                        placeholder="Confirm your password"
                         required
                     />
                     {fieldErrors.passwordConf && <div className="error-message">{fieldErrors.passwordConf}</div>}
                 </div>
 
-                <br />
-                <button type="submit" className="auth-button" disabled={formIsInvalid}>Sign up</button>
+                <div className="link-container">
+                    Already have an account? <Link to="/SignIn">Sign in</Link>
+                </div>
+
+                <button type="submit" className="auth-button" disabled={formIsInvalid}>
+                    Create Account
+                </button>
             </form>
         </div>
     );
