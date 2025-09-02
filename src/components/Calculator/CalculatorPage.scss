@@ -1,0 +1,96 @@
+.calculator-page {
+    min-height: 100vh;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+
+    .calculator-header {
+        text-align: center;
+        margin-bottom: 30px;
+
+        h1 {
+            color: #9C3D54;
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #310B0B;
+            font-size: 1rem;
+            margin: 0 auto;
+            font-family: 'Montserrat', sans-serif;
+        }
+    }
+
+    .calculator-type-selector {
+        margin-bottom: 30px;
+
+        .selector-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+
+            .type-btn {
+                background: white;
+                border: 2px solid #EEB76B;
+                border-radius: 8px;
+                padding: 15px 25px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-family: 'Montserrat', sans-serif;
+
+                &:hover {
+                    border-color: #E2703A;
+                    background: rgba(238, 183, 107, 0.1);
+                }
+
+                &.active {
+                    background: #E2703A;
+                    color: white;
+                    border-color: #E2703A;
+                }
+
+                .btn-icon {
+                    font-size: 1.2rem;
+                    margin-right: 8px;
+                }
+
+                .btn-text {
+                    h3 {
+                        font-size: 1rem;
+                        margin: 0;
+                        font-weight: 600;
+                    }
+
+                    p {
+                        display: none; // Hide description for simplicity
+                    }
+                }
+            }
+        }
+    }
+
+    .calculator-content {
+        margin: 0 auto;
+    }
+}
+
+// Mobile responsiveness
+@media (max-width: 768px) {
+    .calculator-page {
+        padding: 15px;
+
+        .calculator-type-selector {
+            .selector-buttons {
+                flex-direction: column;
+                align-items: center;
+
+                .type-btn {
+                    width: 200px;
+                    text-align: center;
+                }
+            }
+        }
+    }
+}
