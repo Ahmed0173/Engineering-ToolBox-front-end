@@ -72,7 +72,7 @@ export default function ProfileEdit({ user, onUpdated }) {
           <div className="avatar">
             {form.avatarUrl
               ? <img src={form.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-              : <span>{initial}</span>}
+              : <img src="https://cdn.pfps.gg/pfps/2301-default-2.png" alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />}
           </div>
           <h2 className="uname">{form.username || user.username}</h2>
           {form.title && <div className="user-title">{form.title}</div>}

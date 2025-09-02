@@ -3,7 +3,8 @@ import {
     getCommentsByPostId,
     createComment,
     updateComment,
-    deleteComment
+    deleteComment,
+    replyToComment
 } from '../../services/commentService'
 import './Comments.scss'
 
@@ -12,6 +13,8 @@ const Comments = ({ postId, currentUser }) => {
     const [newComment, setNewComment] = useState('')
     const [editingComment, setEditingComment] = useState(null)
     const [editContent, setEditContent] = useState('')
+    const [replyingTo, setReplyingTo] = useState(null)
+    const [replyContent, setReplyContent] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
 
@@ -141,12 +144,8 @@ const Comments = ({ postId, currentUser }) => {
         }
 
         try {
-            const updatedComment = await updateComment(postId, commentId, {
-                content: editContent
-            })
-            setComments(comments.map(c =>
-                c._id === commentId ? updatedComment : c
-            ))
+            await updateComment(postId, commentId, editContent)
+            await fetchComments() // Refresh the entire comments list to include updated replies
             setEditingComment(null)
             setEditContent('')
             setError('')
@@ -162,13 +161,61 @@ const Comments = ({ postId, currentUser }) => {
 
         try {
             await deleteComment(postId, commentId)
-            setComments(comments.filter(c => c._id !== commentId))
+            await fetchComments() // Refresh the entire comments list
             setError('')
         } catch (err) {
             console.error('Error deleting comment:', err)
             const errorMessage = err.message || 'Failed to delete comment. Please try again.'
             setError(errorMessage)
         }
+    }
+
+    const handleReply = async (commentId) => {
+        if (!currentUser) {
+            setError('Please sign in to reply')
+            return
+        }
+
+        const trimmedReply = replyContent.trim()
+        if (!trimmedReply) {
+            setError('Reply cannot be empty')
+            return
+        }
+
+        try {
+            await replyToComment(postId, commentId, trimmedReply)
+            await fetchComments()
+            setReplyingTo(null)
+            setReplyContent('')
+            setError('')
+        } catch (err) {
+            console.error('Error posting reply:', err)
+            const errorMessage = err.message || 'Failed to post reply. Please try again.'
+            setError(errorMessage)
+        }
+    }
+
+    // Helper function to organize comments with replies
+    const organizeComments = (comments) => {
+        // Filter top-level comments (no parent_id or parent_id is null)
+        const topLevelComments = comments.filter(comment => !comment.parent_id || comment.parent_id === null)
+
+        // Create a map of replies grouped by parent comment ID
+        const repliesMap = comments.reduce((acc, comment) => {
+            if (comment.parent_id && comment.parent_id !== null) {
+                const parentId = typeof comment.parent_id === 'object' ? comment.parent_id._id : comment.parent_id
+                if (!acc[parentId]) {
+                    acc[parentId] = []
+                }
+                acc[parentId].push(comment)
+            }
+            return acc
+        }, {})
+
+        return topLevelComments.map(comment => ({
+            ...comment,
+            replies: repliesMap[comment._id] || []
+        }))
     }
 
     return (
@@ -206,7 +253,7 @@ const Comments = ({ postId, currentUser }) => {
                             <p>No comments yet. Be the first to comment!</p>
                         </div>
                     ) : (
-                        comments.map(comment => (
+                        organizeComments(comments).map(comment => (
                             <div key={comment._id} className="comment">
                                 <div className="comment-header">
                                     <span className="comment-author">
@@ -214,6 +261,7 @@ const Comments = ({ postId, currentUser }) => {
                                     </span>
                                     <span className="comment-date">
                                         {new Date(comment.createdAt).toLocaleDateString()}
+                                        {comment.is_edited && <span className="edited-indicator"> (edited)</span>}
                                     </span>
                                 </div>
 
@@ -248,30 +296,151 @@ const Comments = ({ postId, currentUser }) => {
                                 ) : (
                                     <>
                                         <p className="comment-content">{comment.content}</p>
-                                        {isCommentOwner(comment) && (
-                                            <div className="comment-actions">
+                                        <div className="comment-actions">
+                                            {currentUser && (
                                                 <button
-                                                    onClick={() => {
-                                                        setEditingComment(comment._id);
-                                                        setEditContent(comment.content);
-                                                    }}
-                                                    className="edit-btn"
-                                                    title="Edit comment"
-                                                    aria-label={`Edit comment: ${comment.content.substring(0, 30)}...`}
+                                                    onClick={() => setReplyingTo(comment._id)}
+                                                    className="reply-btn"
+                                                    title="Reply to comment"
                                                 >
-                                                    ✏️ Edit
+                                                    💬 Reply
                                                 </button>
-                                                <button
-                                                    onClick={() => handleDelete(comment._id)}
-                                                    className="delete-btn"
-                                                    title="Delete comment"
-                                                    aria-label={`Delete comment: ${comment.content.substring(0, 30)}...`}
-                                                >
-                                                    🗑️ Delete
-                                                </button>
-                                            </div>
-                                        )}
+                                            )}
+                                            {isCommentOwner(comment) && (
+                                                <>
+                                                    <button
+                                                        onClick={() => {
+                                                            setEditingComment(comment._id);
+                                                            setEditContent(comment.content);
+                                                        }}
+                                                        className="edit-btn"
+                                                        title="Edit comment"
+                                                        aria-label={`Edit comment: ${comment.content.substring(0, 30)}...`}
+                                                    >
+                                                        ✏️ Edit
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(comment._id)}
+                                                        className="delete-btn"
+                                                        title="Delete comment"
+                                                        aria-label={`Delete comment: ${comment.content.substring(0, 30)}...`}
+                                                    >
+                                                        🗑️ Delete
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
                                     </>
+                                )}
+
+                                {/* Reply Form */}
+                                {replyingTo === comment._id && (
+                                    <div className="reply-form">
+                                        <textarea
+                                            value={replyContent}
+                                            onChange={(e) => setReplyContent(e.target.value)}
+                                            placeholder="Write a reply..."
+                                            rows={2}
+                                            className="reply-textarea"
+                                        />
+                                        <div className="reply-actions">
+                                            <button
+                                                onClick={() => handleReply(comment._id)}
+                                                className="reply-submit-btn"
+                                                disabled={!replyContent.trim()}
+                                            >
+                                                Post Reply
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setReplyingTo(null);
+                                                    setReplyContent('');
+                                                }}
+                                                className="reply-cancel-btn"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Replies */}
+                                {comment.replies && comment.replies.length > 0 && (
+                                    <div className="replies">
+                                        <div className="replies-header">
+                                            <span className="replies-count">
+                                                {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
+                                            </span>
+                                        </div>
+                                        {comment.replies.map(reply => (
+                                            <div key={reply._id} className="reply">
+                                                <div className="reply-header">
+                                                    <span className="reply-author">
+                                                        {getAuthorDisplayName(reply)}
+                                                    </span>
+                                                    <span className="reply-date">
+                                                        {new Date(reply.createdAt).toLocaleDateString()}
+                                                        {reply.is_edited && <span className="edited-indicator"> (edited)</span>}
+                                                    </span>
+                                                </div>
+
+                                                {editingComment === reply._id ? (
+                                                    <div className="edit-reply-form">
+                                                        <textarea
+                                                            value={editContent}
+                                                            onChange={(e) => setEditContent(e.target.value)}
+                                                            className="edit-textarea"
+                                                            rows={2}
+                                                            aria-label="Edit reply"
+                                                        />
+                                                        <div className="edit-actions">
+                                                            <button
+                                                                onClick={() => handleEdit(reply._id)}
+                                                                className="save-btn"
+                                                                disabled={!editContent.trim()}
+                                                            >
+                                                                Save
+                                                            </button>
+                                                            <button
+                                                                onClick={() => {
+                                                                    setEditingComment(null);
+                                                                    setEditContent('');
+                                                                }}
+                                                                className="cancel-btn"
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        <p className="reply-content">{reply.content}</p>
+                                                        {isCommentOwner(reply) && (
+                                                            <div className="reply-actions">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        setEditingComment(reply._id);
+                                                                        setEditContent(reply.content);
+                                                                    }}
+                                                                    className="edit-btn"
+                                                                    title="Edit reply"
+                                                                >
+                                                                    ✏️ Edit
+                                                                </button>
+                                                                <button
+                                                                    onClick={() => handleDelete(reply._id)}
+                                                                    className="delete-btn"
+                                                                    title="Delete reply"
+                                                                >
+                                                                    🗑️ Delete
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 )}
                             </div>
                         ))

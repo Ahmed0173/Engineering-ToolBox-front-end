@@ -86,9 +86,7 @@ const PrivateChat = () => {
                         {otherUser?.avatar ? (
                             <img src={otherUser.avatar} alt={otherUser.username} />
                         ) : (
-                            <div className="default-avatar">
-                                {otherUser?.username?.[0]?.toUpperCase() || '?'}
-                            </div>
+                            <img src="https://cdn.pfps.gg/pfps/2301-default-2.png" alt={otherUser?.username || 'User'} />
                         )}
                     </div>
                     <h2>{otherUser?.username || 'Unknown User'}</h2>

@@ -33,10 +33,10 @@ export default function PostDetails() {
     const [showDeleteModal, setShowDeleteModal] = useState(false)
 
 
-    useEffect(() => { 
+    useEffect(() => {
         const userData = getUser()
         console.log('User data in PostDetails:', userData)
-        setUser(userData) 
+        setUser(userData)
     }, [])
 
     useEffect(() => {
@@ -109,7 +109,14 @@ export default function PostDetails() {
 
             <article className="pd-card">
                 <header className="pd-header">
-                    <div className="pd-author" data-initial={post.author?.username?.charAt(0)?.toUpperCase() || 'U'}>
+                    <div className="pd-author">
+                        <div className="pd-author-avatar">
+                            {post.author?.avatar ? (
+                                <img src={post.author.avatar} alt={post.author.username} />
+                            ) : (
+                                <img src="https://cdn.pfps.gg/pfps/2301-default-2.png" alt={post.author?.username || 'User'} />
+                            )}
+                        </div>
                         <div className="pd-author-info">
                             <div className="pd-author-name">@{post.author?.username || 'Unknown'}</div>
                             <div className="pd-date">{formatDate(post.createdAt)}</div>
@@ -143,7 +150,7 @@ export default function PostDetails() {
                         <button className="pd-save" onClick={handleSave} disabled={busy || loading}>
                             🔖 Save for Later
                         </button>
-                        
+
                     </div>
                 </footer>
             </article>

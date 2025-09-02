@@ -45,7 +45,7 @@ function UserProfile({ user }) {
                     <div className="avatar">
                         {user.avatar
                             ? <img src={user.avatar} alt={user.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
-                            : initial
+                            : <img src="https://cdn.pfps.gg/pfps/2301-default-2.png" alt={user.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
                         }
                     </div>
                     <h2 className="uname">{user.username}</h2>
