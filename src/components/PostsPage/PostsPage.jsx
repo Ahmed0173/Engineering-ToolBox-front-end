@@ -49,48 +49,25 @@ const PostsPage = () => {
             }
             setError(null);
 
-            const filters = { page, limit: 10 };
-            if (mine && user?._id) filters.author = user._id;
-            if (liked && user?._id) filters.likedBy = user._id;
-            if (saved && user?._id) filters.savedBy = user._id;
-
-
-            const postsData = await postService.getAllPosts(filters);
-            let newPosts = Array.isArray(postsData) ? postsData : [];
-            
-            // Client-side filtering as backup to ensure only correct posts are shown
-            if (user?._id && mine) {
-                const beforeFilter = newPosts.length;
-                newPosts = newPosts.filter(post => {
-                    const authorId = post.author?._id || post.author;
-                    return authorId === user._id;
-                });
-                console.log(`Your Posts filtering: ${beforeFilter} -> ${newPosts.length} posts`);
-            } else if (user?._id && liked) {
-                const beforeFilter = newPosts.length;
-                newPosts = newPosts.filter(post => {
-                    const hasLikes = post.likes && Array.isArray(post.likes);
-                    if (!hasLikes) return false;
-                    
-                    const isLikedByUser = post.likes.some(like => 
-                        (typeof like === 'object' && like._id === user._id) ||
-                        (typeof like === 'string' && like === user._id)
-                    );
-                    return isLikedByUser;
-                });
-                console.log(`Liked Posts filtering: ${beforeFilter} -> ${newPosts.length} posts`);
-            } else if (user?._id && saved) {
-                const beforeFilter = newPosts.length;
-                newPosts = newPosts.filter(post => {
-                    const hasSaved = post.savedBy && Array.isArray(post.savedBy);
-                    if (!hasSaved) return false;
-                    
-                    const isSavedByUser = post.savedBy.some(savedUser =>
-                        (typeof savedUser === 'object' && savedUser._id === user._id) ||
-                        (typeof savedUser === 'string' && savedUser === user._id)
-                    );
-                    return isSavedByUser;
-                });
+            let newPosts = [];
+            if (mine && user?._id) {
+                // My posts
+                const filters = { author: user._id, page, limit: 10 };
+                const postsData = await postService.getAllPosts(filters);
+                newPosts = Array.isArray(postsData) ? postsData : [];
+            } else if (liked && user?._id) {
+                // Liked posts
+                const postsData = await postService.getLikedPosts();
+                newPosts = Array.isArray(postsData) ? postsData : [];
+            } else if (saved && user?._id) {
+                // Favorite (saved) posts
+                const postsData = await postService.getSavedPosts();
+                newPosts = Array.isArray(postsData) ? postsData : [];
+            } else {
+                // All posts
+                const filters = { page, limit: 10 };
+                const postsData = await postService.getAllPosts(filters);
+                newPosts = Array.isArray(postsData) ? postsData : [];
             }
 
             if (append) {
@@ -100,14 +77,16 @@ const PostsPage = () => {
                 setCurrentPage(1);
             }
 
-            // Check if there are more posts to load
             setHasMorePosts(newPosts.length === 10);
 
             // Track which posts are saved by the current user
             if (user?._id && Array.isArray(newPosts)) {
                 const userSavedPosts = new Set(savedPosts);
                 newPosts.forEach(post => {
-                    if (post.savedBy && Array.isArray(post.savedBy)) {
+                    // For saved posts, all returned posts are saved
+                    if (saved) {
+                        userSavedPosts.add(post._id);
+                    } else if (post.savedBy && Array.isArray(post.savedBy)) {
                         const isSaved = post.savedBy.some(savedUser =>
                             (typeof savedUser === 'object' && savedUser._id === user._id) ||
                             (typeof savedUser === 'string' && savedUser === user._id)
