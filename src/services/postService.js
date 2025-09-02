@@ -129,6 +129,8 @@ const likePost = async (postId) => {
 const savePost = async (postId) => {
   try {
     const token = localStorage.getItem('token')
+    if (!token) throw new Error('No authentication token found')
+    
     const res = await fetch(`${BASE_URL}/${postId}/save`, {
       method: 'POST',
       headers: {
@@ -136,10 +138,16 @@ const savePost = async (postId) => {
         Authorization: `Bearer ${token}`
       }
     })
+    
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`)
+    }
+    
     const data = await res.json()
     return data
   } catch (err) {
-    console.log(err)
+    console.error('Error in savePost:', err)
+    throw err
   }
 }
 
