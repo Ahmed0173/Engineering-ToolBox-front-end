@@ -81,7 +81,7 @@ const PostsPage = () => {
 
             // Track which posts are saved by the current user
             if (user?._id && Array.isArray(newPosts)) {
-                const userSavedPosts = new Set(savedPosts);
+                const userSavedPosts = append ? new Set(savedPosts) : new Set();
                 newPosts.forEach(post => {
                     // For saved posts, all returned posts are saved
                     if (saved) {
@@ -148,6 +148,11 @@ const PostsPage = () => {
                 }
                 return newSavedPosts;
             });
+
+            // If we're viewing saved posts and user unsaved a post, remove it from the list
+            if (saved) {
+                setPosts(prevPosts => prevPosts.filter(post => post._id !== postId));
+            }
 
         } catch (err) {
             console.error('Error saving post:', err);
