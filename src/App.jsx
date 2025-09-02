@@ -112,17 +112,19 @@ export default function App() {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<HomePage user={user} />} />
-        <Route path="/auth/signup" element={<SignUp handleSignUp={handleSignUp} />} />
-        <Route path="/auth/signin" element={<SignIn user={user} handleSignIn={handleSignIn} handleSignOut={handleSignOut} />} />
-        <Route path="/profile/edit" element={user ? <ProfileEdit user={user} onUpdated={setUser} /> : <Navigate to="/signin" replace />} />
         <Route path="/posts" element={<PostsPage />} />
         <Route path="/posts/:postId" element={<PostDetails />} />
-        <Route path="/posts/:postId/edit" element={user ? (<PostForm handleAddPost={handleAddPost} handleUpdatePost={handleUpdatePost} />) : (<Navigate to="/auth/signin" replace />)} />
         <Route path="/calculator" element={<CalculatorPage />} />
 
-        {/* Private Routes (require authentication) */}
-        <Route path="/users/profile" element={<UserProfile user={user} />} />
-        <Route path="/posts/new" element={user ? (<PostForm handleAddPost={handleAddPost} handleUpdatePost={handleUpdatePost} />) : (<Navigate to="/auth/signin" replace />)} />
+        {/* Auth Routes - redirect to home if already signed in */}
+        <Route path="/auth/signup" element={user ? <Navigate to="/" replace /> : <SignUp handleSignUp={handleSignUp} />} />
+        <Route path="/auth/signin" element={user ? <Navigate to="/" replace /> : <SignIn user={user} handleSignIn={handleSignIn} handleSignOut={handleSignOut} />} />
+
+        {/* Protected Routes - redirect to signin if not authenticated */}
+        <Route path="/users/profile" element={user ? <UserProfile user={user} /> : <Navigate to="/auth/signin" replace />} />
+        <Route path="/profile/edit" element={user ? <ProfileEdit user={user} onUpdated={setUser} /> : <Navigate to="/auth/signin" replace />} />
+        <Route path="/posts/new" element={user ? <PostForm handleAddPost={handleAddPost} handleUpdatePost={handleUpdatePost} /> : <Navigate to="/auth/signin" replace />} />
+        <Route path="/posts/:postId/edit" element={user ? <PostForm handleAddPost={handleAddPost} handleUpdatePost={handleUpdatePost} /> : <Navigate to="/auth/signin" replace />} />
         <Route path="/chats" element={user ? <PrivateChats /> : <Navigate to="/auth/signin" replace />} />
         <Route path="/chats/:chatId" element={user ? <PrivateChat /> : <Navigate to="/auth/signin" replace />} />
 
