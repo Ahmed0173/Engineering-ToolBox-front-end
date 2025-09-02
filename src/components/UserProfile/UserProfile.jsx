@@ -37,7 +37,7 @@ function UserProfile({ user }) {
 
     return (
         <main className="profile">
-            <button className="btn btn-light back-btn" onClick={() => navigate(-1)}>← Back</button>
+            <button className="btn btn-light back-btn" onClick={() => navigate('/')}>← Back</button>
             <h1 className="title">Your Profile</h1>
 
             <section className="profile-grid">
