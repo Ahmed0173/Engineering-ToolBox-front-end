@@ -5,6 +5,7 @@ import SignIn from './components/SignIn/SignIn.jsx'
 import PostsPage from './components/PostsPage/PostsPage'
 import PostForm from './components/PostForm/PostForm.jsx'
 import HomePage from './components/HomePage/HomePage.jsx'
+import CalculatorPage from './components/Calculator/CalculatorPage.jsx'
 import './App.scss'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import * as authService from './services/authService'
@@ -117,6 +118,7 @@ export default function App() {
         <Route path="/posts" element={<PostsPage />} />
         <Route path="/posts/:postId" element={<PostDetails />} />
         <Route path="/posts/:postId/edit" element={user ? (<PostForm handleAddPost={handleAddPost} handleUpdatePost={handleUpdatePost} />) : (<Navigate to="/auth/signin" replace />)} />
+        <Route path="/calculator" element={<CalculatorPage />} />
 
         {/* Private Routes (require authentication) */}
         <Route path="/users/profile" element={<UserProfile user={user} />} />
