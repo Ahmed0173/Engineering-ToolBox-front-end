@@ -35,7 +35,6 @@ const PostsPage = () => {
     useEffect(() => {
         // If we need user data for filtering but don't have it yet, wait
         if ((mine || liked || saved) && !user) {
-            console.log('Waiting for user data to apply filter...');
             return;
         }
         fetchPosts();
@@ -55,7 +54,6 @@ const PostsPage = () => {
             if (liked && user?._id) filters.likedBy = user._id;
             if (saved && user?._id) filters.savedBy = user._id;
 
-            console.log('Fetching with filters:', { mine, liked, saved, userId: user?._id, filters });
 
             const postsData = await postService.getAllPosts(filters);
             let newPosts = Array.isArray(postsData) ? postsData : [];
@@ -69,21 +67,30 @@ const PostsPage = () => {
                 });
                 console.log(`Your Posts filtering: ${beforeFilter} -> ${newPosts.length} posts`);
             } else if (user?._id && liked) {
-                newPosts = newPosts.filter(post => 
-                    post.likes && Array.isArray(post.likes) &&
-                    post.likes.some(like => 
+                const beforeFilter = newPosts.length;
+                newPosts = newPosts.filter(post => {
+                    const hasLikes = post.likes && Array.isArray(post.likes);
+                    if (!hasLikes) return false;
+                    
+                    const isLikedByUser = post.likes.some(like => 
                         (typeof like === 'object' && like._id === user._id) ||
                         (typeof like === 'string' && like === user._id)
-                    )
-                );
+                    );
+                    return isLikedByUser;
+                });
+                console.log(`Liked Posts filtering: ${beforeFilter} -> ${newPosts.length} posts`);
             } else if (user?._id && saved) {
-                newPosts = newPosts.filter(post => 
-                    post.savedBy && Array.isArray(post.savedBy) &&
-                    post.savedBy.some(savedUser =>
+                const beforeFilter = newPosts.length;
+                newPosts = newPosts.filter(post => {
+                    const hasSaved = post.savedBy && Array.isArray(post.savedBy);
+                    if (!hasSaved) return false;
+                    
+                    const isSavedByUser = post.savedBy.some(savedUser =>
                         (typeof savedUser === 'object' && savedUser._id === user._id) ||
                         (typeof savedUser === 'string' && savedUser === user._id)
-                    )
-                );
+                    );
+                    return isSavedByUser;
+                });
             }
 
             if (append) {
@@ -114,7 +121,6 @@ const PostsPage = () => {
             }
         } catch (err) {
             setError('Failed to fetch posts');
-            console.error('Error fetching posts:', err);
         } finally {
             setLoading(false);
             setLoadingMore(false);
@@ -164,7 +170,6 @@ const PostsPage = () => {
                 return newSavedPosts;
             });
 
-            console.log('Post save/unsave action completed');
         } catch (err) {
             console.error('Error saving post:', err);
             const errorMessage = err.message || 'Failed to save post. Please try again.';
