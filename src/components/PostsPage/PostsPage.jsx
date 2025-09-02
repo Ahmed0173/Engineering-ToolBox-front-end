@@ -30,11 +30,16 @@ const PostsPage = () => {
     useEffect(() => {
         const currentUser = getUser();
         setUser(currentUser);
-    }, []); // Remove user from dependencies to prevent infinite loop
+    }, []);
 
     useEffect(() => {
+        // If we need user data for filtering but don't have it yet, wait
+        if ((mine || liked || saved) && !user) {
+            console.log('Waiting for user data to apply filter...');
+            return;
+        }
         fetchPosts();
-    }, [mine, liked, saved, user]); // Add user to dependencies since filters depend on user._id
+    }, [mine, liked, saved, user]);
 
     const fetchPosts = async (page = 1, append = false) => {
         try {
@@ -50,8 +55,36 @@ const PostsPage = () => {
             if (liked && user?._id) filters.likedBy = user._id;
             if (saved && user?._id) filters.savedBy = user._id;
 
+            console.log('Fetching with filters:', { mine, liked, saved, userId: user?._id, filters });
+
             const postsData = await postService.getAllPosts(filters);
-            const newPosts = Array.isArray(postsData) ? postsData : [];
+            let newPosts = Array.isArray(postsData) ? postsData : [];
+            
+            // Client-side filtering as backup to ensure only correct posts are shown
+            if (user?._id && mine) {
+                const beforeFilter = newPosts.length;
+                newPosts = newPosts.filter(post => {
+                    const authorId = post.author?._id || post.author;
+                    return authorId === user._id;
+                });
+                console.log(`Your Posts filtering: ${beforeFilter} -> ${newPosts.length} posts`);
+            } else if (user?._id && liked) {
+                newPosts = newPosts.filter(post => 
+                    post.likes && Array.isArray(post.likes) &&
+                    post.likes.some(like => 
+                        (typeof like === 'object' && like._id === user._id) ||
+                        (typeof like === 'string' && like === user._id)
+                    )
+                );
+            } else if (user?._id && saved) {
+                newPosts = newPosts.filter(post => 
+                    post.savedBy && Array.isArray(post.savedBy) &&
+                    post.savedBy.some(savedUser =>
+                        (typeof savedUser === 'object' && savedUser._id === user._id) ||
+                        (typeof savedUser === 'string' && savedUser === user._id)
+                    )
+                );
+            }
 
             if (append) {
                 setPosts(prevPosts => [...prevPosts, ...newPosts]);
