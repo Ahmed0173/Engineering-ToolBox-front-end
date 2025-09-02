@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
     getCommentsByPostId,
     createComment,
@@ -6,9 +7,11 @@ import {
     deleteComment,
     replyToComment
 } from '../../services/commentService'
+import PrivateChatModal from '../PostsPage/PrivateChatModal'
 import './Comments.scss'
 
 const Comments = ({ postId, currentUser }) => {
+    const navigate = useNavigate()
     const [comments, setComments] = useState([])
     const [newComment, setNewComment] = useState('')
     const [editingComment, setEditingComment] = useState(null)
@@ -17,6 +20,8 @@ const Comments = ({ postId, currentUser }) => {
     const [replyContent, setReplyContent] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+    const [showChatModal, setShowChatModal] = useState(false)
+    const [selectedUser, setSelectedUser] = useState(null)
 
     // Helper function to get author display name
     const getAuthorDisplayName = (comment) => {
@@ -88,6 +93,67 @@ const Comments = ({ postId, currentUser }) => {
         }
 
         return false
+    }
+
+    // Helper function to get author object from comment
+    const getAuthorObject = (comment) => {
+        const author = comment.user_id || comment.author;
+        
+        if (author && typeof author === 'object') {
+            return author;
+        }
+        
+        return null;
+    }
+
+    // Helper function to check if author is clickable (not current user)
+    const isAuthorClickable = (comment) => {
+        if (!currentUser) return false;
+        
+        const authorObj = getAuthorObject(comment);
+        if (authorObj && authorObj._id !== currentUser._id) {
+            return true;
+        }
+        
+        // Check if author is a string ID that's different from current user
+        const author = comment.user_id || comment.author;
+        if (typeof author === 'string' && author !== currentUser._id) {
+            // We can't click on string IDs since we don't have user details
+            return false;
+        }
+        
+        return false;
+    }
+
+    // Handle author click
+    const handleAuthorClick = (comment, e) => {
+        e.stopPropagation();
+        const authorObj = getAuthorObject(comment);
+        if (authorObj && isAuthorClickable(comment)) {
+            setSelectedUser(authorObj);
+            setShowChatModal(true);
+        }
+    }
+
+    // Handle start chat
+    const handleStartChat = () => {
+        if (!selectedUser) return;
+
+        const cleanUserData = {
+            _id: selectedUser._id,
+            username: selectedUser.username,
+            email: selectedUser.email
+        };
+
+        navigate(`/chats`, { state: { selectedUser: cleanUserData } });
+        setShowChatModal(false);
+        setSelectedUser(null);
+    }
+
+    // Handle close modal
+    const handleCloseModal = () => {
+        setShowChatModal(false);
+        setSelectedUser(null);
     }
 
     useEffect(() => {
@@ -256,7 +322,15 @@ const Comments = ({ postId, currentUser }) => {
                         organizeComments(comments).map(comment => (
                             <div key={comment._id} className="comment">
                                 <div className="comment-header">
-                                    <span className="comment-author">
+                                    <span 
+                                        className={`comment-author ${isAuthorClickable(comment) ? 'clickable' : ''}`}
+                                        onClick={isAuthorClickable(comment) ? (e) => handleAuthorClick(comment, e) : undefined}
+                                        style={{
+                                            cursor: isAuthorClickable(comment) ? 'pointer' : 'default',
+                                            color: isAuthorClickable(comment) ? '#0077cc' : 'inherit',
+                                            textDecoration: isAuthorClickable(comment) ? 'underline' : 'none'
+                                        }}
+                                    >
                                         {getAuthorDisplayName(comment)}
                                     </span>
                                     <span className="comment-date">
@@ -375,7 +449,15 @@ const Comments = ({ postId, currentUser }) => {
                                         {comment.replies.map(reply => (
                                             <div key={reply._id} className="reply">
                                                 <div className="reply-header">
-                                                    <span className="reply-author">
+                                                    <span 
+                                                        className={`reply-author ${isAuthorClickable(reply) ? 'clickable' : ''}`}
+                                                        onClick={isAuthorClickable(reply) ? (e) => handleAuthorClick(reply, e) : undefined}
+                                                        style={{
+                                                            cursor: isAuthorClickable(reply) ? 'pointer' : 'default',
+                                                            color: isAuthorClickable(reply) ? '#0077cc' : 'inherit',
+                                                            textDecoration: isAuthorClickable(reply) ? 'underline' : 'none'
+                                                        }}
+                                                    >
                                                         {getAuthorDisplayName(reply)}
                                                     </span>
                                                     <span className="reply-date">
@@ -446,6 +528,14 @@ const Comments = ({ postId, currentUser }) => {
                         ))
                     )}
                 </div>
+            )}
+
+            {showChatModal && selectedUser && (
+                <PrivateChatModal
+                    user={selectedUser}
+                    onStartChat={handleStartChat}
+                    onClose={handleCloseModal}
+                />
             )}
         </div>
     )
