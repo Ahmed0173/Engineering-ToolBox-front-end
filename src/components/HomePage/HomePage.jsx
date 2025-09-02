@@ -123,7 +123,7 @@ const HomePage = ({ user }) => {
                                     <h3>Basic Calculator</h3>
                                     <p>Perform Quick Calculations</p>
                                 </Link>
-                                <Link to="/calculator/formula" className="tool-card">
+                                <Link to="/calculator?type=formula" className="tool-card">
                                     <div className="tool-icon">📐</div>
                                     <h3>Formula Calculator</h3>
                                     <p>Engineering Formulas</p>

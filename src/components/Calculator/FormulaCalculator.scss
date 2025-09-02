@@ -1,0 +1,220 @@
+// FormulaCalculator Styles
+.formula-calc {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+
+    .fc-controls {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+        flex-wrap: wrap;
+
+        .fc-field {
+            display: flex;
+            flex-direction: column;
+
+            &.grow {
+                flex: 1;
+                min-width: 250px;
+            }
+
+            label {
+                font-weight: 600;
+                margin-bottom: 5px;
+                color: #374151;
+            }
+
+            select,
+            input {
+                padding: 8px 12px;
+                border: 2px solid #e5e7eb;
+                border-radius: 6px;
+                font-size: 14px;
+                transition: border-color 0.2s;
+
+                &:focus {
+                    outline: none;
+                    border-color: #3b82f6;
+                    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                }
+            }
+
+            .muted {
+                color: #6b7280;
+                font-style: italic;
+                padding: 8px 12px;
+            }
+
+            .error {
+                color: #dc2626;
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+        }
+    }
+
+    .fc-body {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 30px;
+
+        @media (max-width: 768px) {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .fc-info {
+            .card {
+                background: #f9fafb;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                padding: 20px;
+
+                .title {
+                    font-size: 18px;
+                    font-weight: 700;
+                    color: #111827;
+                    margin-bottom: 10px;
+                }
+
+                .muted {
+                    color: #6b7280;
+                    margin-bottom: 15px;
+                    line-height: 1.5;
+                }
+
+                .math {
+                    background: #374151;
+                    color: #f9fafb;
+                    padding: 10px 15px;
+                    border-radius: 6px;
+                    margin-bottom: 15px;
+
+                    code {
+                        font-family: 'Courier New', monospace;
+                        font-size: 16px;
+                    }
+                }
+
+                .tags {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 8px;
+
+                    .tag {
+                        background: #dbeafe;
+                        color: #1e40af;
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                        font-size: 12px;
+                        font-weight: 500;
+                    }
+                }
+            }
+        }
+
+        .fc-work {
+            .fc-field {
+                margin-bottom: 20px;
+
+                label {
+                    font-weight: 600;
+                    margin-bottom: 5px;
+                    color: #374151;
+                    display: block;
+
+                    .unit {
+                        color: #6b7280;
+                        font-weight: 400;
+                    }
+                }
+
+                select,
+                input {
+                    width: 100%;
+                    padding: 10px 12px;
+                    border: 2px solid #e5e7eb;
+                    border-radius: 6px;
+                    font-size: 14px;
+                    transition: border-color 0.2s;
+
+                    &:focus {
+                        outline: none;
+                        border-color: #3b82f6;
+                        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                    }
+                }
+
+                .hint {
+                    color: #6b7280;
+                    font-size: 12px;
+                    margin-top: 4px;
+                }
+            }
+
+            .inputs-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+                margin-bottom: 25px;
+            }
+
+            .actions {
+                margin-bottom: 25px;
+
+                .calc-btn {
+                    background: #3b82f6;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 6px;
+                    font-size: 16px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: background-color 0.2s;
+
+                    &:hover:not(:disabled) {
+                        background: #2563eb;
+                    }
+
+                    &:disabled {
+                        background: #9ca3af;
+                        cursor: not-allowed;
+                    }
+                }
+
+                .error {
+                    color: #dc2626;
+                    margin-top: 10px;
+                    font-size: 14px;
+                }
+            }
+
+            .result-card {
+                background: #ecfdf5;
+                border: 2px solid #10b981;
+                border-radius: 8px;
+                padding: 20px;
+
+                .label {
+                    font-weight: 600;
+                    color: #065f46;
+                    margin-bottom: 8px;
+                }
+
+                .value {
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #047857;
+
+                    .unit {
+                        font-size: 16px;
+                        color: #059669;
+                        margin-left: 5px;
+                    }
+                }
+            }
+        }
+    }
+}

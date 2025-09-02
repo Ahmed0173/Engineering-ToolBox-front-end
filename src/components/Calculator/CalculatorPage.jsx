@@ -1,13 +1,25 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import BasicCalculator from './BasicCalculator';
 import FormulaCalculator from './FormulaCalculator';
 import './CalculatorPage.scss';
 
 const CalculatorPage = () => {
+    const [searchParams] = useSearchParams();
     const [calculatorType, setCalculatorType] = useState('BASIC');
     const [calculators, setCalculators] = useState([]);
     const [currentCalculator, setCurrentCalculator] = useState(null);
     const [loading, setLoading] = useState(false);
+
+    // Check URL parameters on component mount
+    useEffect(() => {
+        const typeParam = searchParams.get('type');
+        if (typeParam === 'formula') {
+            setCalculatorType('FORMULA');
+        } else if (typeParam === 'basic') {
+            setCalculatorType('BASIC');
+        }
+    }, [searchParams]);
 
     const handleCalculatorTypeChange = (type) => {
         setCalculatorType(type);
