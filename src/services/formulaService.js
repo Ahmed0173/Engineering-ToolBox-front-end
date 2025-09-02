@@ -1,62 +1,61 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api';
+// src/services/formulaService.js
+const API_ROOT = (import.meta.env.VITE_BACK_END_SERVER_URL || 'http://localhost:3000').replace(/\/+$/, '');
+const BASE_URL  = `${API_ROOT}/formulas`; // <-- single /formulas
 
-// Formula API functions
 export const formulaService = {
-  // Get all formulas with filtering
+  // GET /formulas?category=&difficulty=&search=&page=&limit=
   getFormulas: async (filters = {}) => {
-    const queryParams = new URLSearchParams();
-    
-    if (filters.category) queryParams.append('category', filters.category);
-    if (filters.difficulty) queryParams.append('difficulty', filters.difficulty);
-    if (filters.search) queryParams.append('search', filters.search);
-    if (filters.page) queryParams.append('page', filters.page);
-    if (filters.limit) queryParams.append('limit', filters.limit);
+    const qs = new URLSearchParams();
+    if (filters.category)   qs.append('category', filters.category);
+    if (filters.difficulty) qs.append('difficulty', filters.difficulty);
+    if (filters.search)     qs.append('search', filters.search);
+    if (filters.page)       qs.append('page', filters.page);
+    if (filters.limit)      qs.append('limit', filters.limit);
 
-    const response = await fetch(`${API_BASE_URL}/formulas?${queryParams}`);
-    return response.json();
+    const res = await fetch(`${BASE_URL}?${qs.toString()}`);
+    if (!res.ok) throw new Error(`GET formulas failed: ${res.status}`);
+    return res.json();
   },
 
-  // Get formula by ID
+  // GET /formulas/:id
   getFormulaById: async (formulaId) => {
-    const response = await fetch(`${API_BASE_URL}/formulas/${formulaId}`);
-    return response.json();
+    const res = await fetch(`${BASE_URL}/${formulaId}`);
+    if (!res.ok) throw new Error(`GET formula failed: ${res.status}`);
+    return res.json();
   },
 
-  // Get formulas by category
+  // GET /formulas/category/:category  (only if your backend supports it)
   getFormulasByCategory: async (category) => {
-    const response = await fetch(`${API_BASE_URL}/formulas/category/${category}`);
-    return response.json();
+    const res = await fetch(`${BASE_URL}/category/${encodeURIComponent(category)}`);
+    if (!res.ok) throw new Error(`GET formulas by category failed: ${res.status}`);
+    return res.json();
   },
 
-  // Get calculation options for a formula
+  // GET /formulas/:id/calculation-options
   getFormulaCalculationOptions: async (formulaId) => {
-    const response = await fetch(`${API_BASE_URL}/formulas/${formulaId}/calculation-options`);
-    return response.json();
+    const res = await fetch(`${BASE_URL}/${formulaId}/calculation-options`);
+    if (!res.ok) throw new Error(`GET options failed: ${res.status}`);
+    return res.json();
   },
 
-  // Perform formula calculation
+  // POST /formulas/calculate
   performFormulaCalculation: async (calculationData) => {
-    const response = await fetch(`${API_BASE_URL}/formulas/calculate`, {
+    const res = await fetch(`${BASE_URL}/calculate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
+        Authorization: `Bearer ${localStorage.getItem('token') || ''}`,
       },
-      body: JSON.stringify(calculationData)
+      body: JSON.stringify(calculationData),
     });
-    return response.json();
+    if (!res.ok) throw new Error(`Calculate failed: ${res.status}`);
+    return res.json();
   },
 
-  // Search formulas
+  // helper
   searchFormulas: async (searchTerm, filters = {}) => {
-    const queryParams = new URLSearchParams({
-      search: searchTerm,
-      ...filters
-    });
-
-    const response = await fetch(`${API_BASE_URL}/formulas?${queryParams}`);
-    return response.json();
-  }
+    return formulaService.getFormulas({ ...filters, search: searchTerm });
+  },
 };
 
 export default formulaService;
