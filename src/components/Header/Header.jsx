@@ -26,7 +26,7 @@ const NavBar = ({ user, handleSignOut }) => {
                         <Link to="/profile" className="avatar-link" aria-label="Profile" onClick={closeMenu}>
                             {user.avatar
                                 ? <img src={user.avatar} alt="" className="avatar-img" />
-                                : <span className="avatar-dot">{initial}</span>}
+                                : <img src="https://cdn.pfps.gg/pfps/2301-default-2.png" alt="" className="avatar-img" />}
                         </Link>
                     )}
                     <Link to="/" className="brand">Engineering Toolbox</Link>
