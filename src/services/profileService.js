@@ -19,6 +19,16 @@ const getProfile = async () => {
 const updateProfile = async (profileData) => {
   try {
     const token = localStorage.getItem('token');
+    
+    // Validate required fields
+    if (profileData.username && profileData.username.trim().length < 3) {
+      throw new Error('Username must be at least 3 characters');
+    }
+    
+    if (profileData.bio && profileData.bio.length > 500) {
+      throw new Error('Bio must be 500 characters or less');
+    }
+
     const res = await fetch(`${BASE_URL}/me`, {
       method: 'PATCH',
       headers: {
@@ -27,7 +37,12 @@ const updateProfile = async (profileData) => {
       },
       body: JSON.stringify(profileData),
     });
-    if (!res.ok) throw new Error('Failed to update profile');
+    
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || 'Failed to update profile');
+    }
+    
     return await res.json();
   } catch (err) {
     console.error('Error updating profile:', err);
@@ -46,23 +61,4 @@ const getPublicProfile = async (userId) => {
   }
 };
 
-const uploadAvatar = async (imageBase64) => {
-  try {
-    const token = localStorage.getItem('token');
-    const res = await fetch(`${BASE_URL}/me/avatar`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ image: imageBase64 }),
-    });
-    if (!res.ok) throw new Error('Failed to upload avatar');
-    return await res.json();
-  } catch (err) {
-    console.error('Error uploading avatar:', err);
-    throw err;
-  }
-};
-
-export { getProfile, updateProfile, getPublicProfile, uploadAvatar };
+export { getProfile, updateProfile, getPublicProfile };

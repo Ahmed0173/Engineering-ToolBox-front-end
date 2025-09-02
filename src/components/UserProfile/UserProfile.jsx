@@ -5,20 +5,20 @@ function UserProfile({ user }) {
     const navigate = useNavigate()
     const [counts, setCounts] = useState({ mine: 0, saved: 0, liked: 0, loading: true })
 
- useEffect(() => {
-  if (!user?._id) return
-  const API = (import.meta.env.VITE_BACK_END_SERVER_URL || 'http://localhost:3000').replace(/\/$/, '')
+    useEffect(() => {
+        if (!user?._id) return
+        const API = (import.meta.env.VITE_BACK_END_SERVER_URL || 'http://localhost:3000').replace(/\/$/, '')
 
-  const qMine  = fetch(`${API}/posts?author=${user._id}`).then(r => r.ok ? r.json() : [])
-  const qSaved = fetch(`${API}/posts?savedBy=${user._id}`).then(r => r.ok ? r.json() : [])
-  const qLiked = fetch(`${API}/posts?likedBy=${user._id}`).then(r => r.ok ? r.json() : [])
+        const qMine = fetch(`${API}/posts?author=${user._id}`).then(r => r.ok ? r.json() : [])
+        const qSaved = fetch(`${API}/posts?savedBy=${user._id}`).then(r => r.ok ? r.json() : [])
+        const qLiked = fetch(`${API}/posts?likedBy=${user._id}`).then(r => r.ok ? r.json() : [])
 
-  Promise.all([qMine, qSaved, qLiked])
-    .then(([m = [], s = [], l = []]) =>
-      setCounts({ mine: m.length, saved: s.length, liked: l.length, loading: false })
-    )
-    .catch(() => setCounts(c => ({ ...c, loading: false })))
-}, [user?._id])
+        Promise.all([qMine, qSaved, qLiked])
+            .then(([m = [], s = [], l = []]) =>
+                setCounts({ mine: m.length, saved: s.length, liked: l.length, loading: false })
+            )
+            .catch(() => setCounts(c => ({ ...c, loading: false })))
+    }, [user?._id])
 
 
     if (!user) {
@@ -42,10 +42,18 @@ function UserProfile({ user }) {
 
             <section className="profile-grid">
                 <aside className="profile-card identity">
-                    <div className="avatar">{initial}</div>
+                    <div className="avatar">
+                        {user.avatar
+                            ? <img src={user.avatar} alt={user.username} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+                            : initial
+                        }
+                    </div>
                     <h2 className="uname">{user.username}</h2>
+                    {user.title && <div className="user-title">{user.title}</div>}
                     {user.email && <div className="uemail">{user.email}</div>}
                     {user.bio && <p className="ubio">{user.bio}</p>}
+                    {user.contactInfo && <div className="user-contact">📞 {user.contactInfo}</div>}
+                    <div className="member-since">Member since {new Date(user.createdAt).getFullYear()}</div>
                     <div className="identity-actions">
                         <Link to="/profile/edit" className="btn btn-primary">Edit Profile</Link>
                     </div>
