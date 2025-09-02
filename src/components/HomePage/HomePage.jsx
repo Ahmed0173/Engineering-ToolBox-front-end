@@ -69,8 +69,8 @@ const HomePage = ({ user }) => {
                 <>
                     {/* Welcome Section */}
                     <section className="home-welcome">
-                        <h1 className="home-header">Welcome back, {user.username}!</h1>
-                        <p className="home-subheader">Ready to solve some engineering challenges today?</p>
+                        <h1 className="home-header">Welcome Back, {user.username}!</h1>
+                        <p className="home-subheader">Ready To Solve Some Engineering Challenges Today?</p>
                         <div className="home-quick-actions">
                             <Link to="/posts/new" className="home-action-btn primary">
                                 ✏️ Create Post
@@ -121,22 +121,22 @@ const HomePage = ({ user }) => {
                                 <Link to="/calculator" className="tool-card">
                                     <div className="tool-icon">🧮</div>
                                     <h3>Basic Calculator</h3>
-                                    <p>Perform quick calculations</p>
+                                    <p>Perform Quick Calculations</p>
                                 </Link>
                                 <Link to="/calculator/formula" className="tool-card">
                                     <div className="tool-icon">📐</div>
                                     <h3>Formula Calculator</h3>
-                                    <p>Engineering formulas</p>
+                                    <p>Engineering Formulas</p>
                                 </Link>
                                 <Link to="/chats" className="tool-card">
                                     <div className="tool-icon">💬</div>
                                     <h3>Private Chats</h3>
-                                    <p>Connect with engineers</p>
+                                    <p>Connect With Engineers</p>
                                 </Link>
                                 <Link to="/posts?saved=1" className="tool-card">
                                     <div className="tool-icon">🔖</div>
                                     <h3>Saved Posts</h3>
-                                    <p>Your bookmarks</p>
+                                    <p>Your Bookmarks</p>
                                 </Link>
                             </div>
                         </section>
@@ -197,11 +197,11 @@ const HomePage = ({ user }) => {
                             <div className="home-hero-text-subheading">
                                 <p className="home-hero-text-subheading-para">
                                     Engineering ToolBox is your comprehensive platform for engineering calculations,
-                                    formulas, and community knowledge sharing. Connect with fellow engineers,
+                                    Formulas, and community knowledge sharing. Connect with fellow engineers,
                                     share solutions, and access powerful calculation tools.
                                 </p>
                                 <p className="home-hero-text-subheading-para">
-                                    Ready to elevate your engineering work?
+                                    Ready To Elevate Your Engineering Work?
                                 </p>
                             </div>
                             <div className="home-hero-text-cta">
@@ -220,7 +220,7 @@ const HomePage = ({ user }) => {
                                     </Link>
                                 </div>
                                 <div className="home-hero-text-cta-link">
-                                    Want to explore first? <a href="#home-features">See what we offer</a>.
+                                    Want To Explore First? <a href="#home-features">See what we offer</a>.
                                 </div>
                             </div>
                         </div>
