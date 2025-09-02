@@ -106,6 +106,18 @@ const Comments = ({ postId, currentUser }) => {
         return null;
     }
 
+    // Helper function to get author avatar
+    const getAuthorAvatar = (comment) => {
+        const author = comment.user_id || comment.author;
+        
+        if (author && typeof author === 'object' && author.avatar) {
+            return author.avatar;
+        }
+        
+        // Return default avatar
+        return "https://cdn.pfps.gg/pfps/2301-default-2.png";
+    }
+
     // Helper function to check if author is clickable (not current user)
     const isAuthorClickable = (comment) => {
         if (!currentUser) return false;
@@ -322,17 +334,26 @@ const Comments = ({ postId, currentUser }) => {
                         organizeComments(comments).map(comment => (
                             <div key={comment._id} className="comment">
                                 <div className="comment-header">
-                                    <span 
-                                        className={`comment-author ${isAuthorClickable(comment) ? 'clickable' : ''}`}
-                                        onClick={isAuthorClickable(comment) ? (e) => handleAuthorClick(comment, e) : undefined}
-                                        style={{
-                                            cursor: isAuthorClickable(comment) ? 'pointer' : 'default',
-                                            color: isAuthorClickable(comment) ? '#0077cc' : 'inherit',
-                                            textDecoration: isAuthorClickable(comment) ? 'underline' : 'none'
-                                        }}
-                                    >
-                                        {getAuthorDisplayName(comment)}
-                                    </span>
+                                    <div className="comment-author-section">
+                                        <div className="comment-avatar">
+                                            <img 
+                                                src={getAuthorAvatar(comment)} 
+                                                alt={getAuthorDisplayName(comment)}
+                                                style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
+                                            />
+                                        </div>
+                                        <span 
+                                            className={`comment-author ${isAuthorClickable(comment) ? 'clickable' : ''}`}
+                                            onClick={isAuthorClickable(comment) ? (e) => handleAuthorClick(comment, e) : undefined}
+                                            style={{
+                                                cursor: isAuthorClickable(comment) ? 'pointer' : 'default',
+                                                color: isAuthorClickable(comment) ? '#0077cc' : 'inherit',
+                                                textDecoration: isAuthorClickable(comment) ? 'underline' : 'none'
+                                            }}
+                                        >
+                                            {getAuthorDisplayName(comment)}
+                                        </span>
+                                    </div>
                                     <span className="comment-date">
                                         {new Date(comment.createdAt).toLocaleDateString()}
                                         {comment.is_edited && <span className="edited-indicator"> (edited)</span>}
@@ -449,17 +470,26 @@ const Comments = ({ postId, currentUser }) => {
                                         {comment.replies.map(reply => (
                                             <div key={reply._id} className="reply">
                                                 <div className="reply-header">
-                                                    <span 
-                                                        className={`reply-author ${isAuthorClickable(reply) ? 'clickable' : ''}`}
-                                                        onClick={isAuthorClickable(reply) ? (e) => handleAuthorClick(reply, e) : undefined}
-                                                        style={{
-                                                            cursor: isAuthorClickable(reply) ? 'pointer' : 'default',
-                                                            color: isAuthorClickable(reply) ? '#0077cc' : 'inherit',
-                                                            textDecoration: isAuthorClickable(reply) ? 'underline' : 'none'
-                                                        }}
-                                                    >
-                                                        {getAuthorDisplayName(reply)}
-                                                    </span>
+                                                    <div className="reply-author-section">
+                                                        <div className="reply-avatar">
+                                                            <img 
+                                                                src={getAuthorAvatar(reply)} 
+                                                                alt={getAuthorDisplayName(reply)}
+                                                                style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }}
+                                                            />
+                                                        </div>
+                                                        <span 
+                                                            className={`reply-author ${isAuthorClickable(reply) ? 'clickable' : ''}`}
+                                                            onClick={isAuthorClickable(reply) ? (e) => handleAuthorClick(reply, e) : undefined}
+                                                            style={{
+                                                                cursor: isAuthorClickable(reply) ? 'pointer' : 'default',
+                                                                color: isAuthorClickable(reply) ? '#0077cc' : 'inherit',
+                                                                textDecoration: isAuthorClickable(reply) ? 'underline' : 'none'
+                                                            }}
+                                                        >
+                                                            {getAuthorDisplayName(reply)}
+                                                        </span>
+                                                    </div>
                                                     <span className="reply-date">
                                                         {new Date(reply.createdAt).toLocaleDateString()}
                                                         {reply.is_edited && <span className="edited-indicator"> (edited)</span>}
