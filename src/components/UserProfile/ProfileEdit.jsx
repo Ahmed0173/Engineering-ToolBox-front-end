@@ -1,15 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getProfile, updateProfile, uploadAvatar } from '../../services/profileService';
+import { getProfile, updateProfile } from '../../services/profileService';
 import './UserProfile.scss';
-
-// file -> base64 for your uploadAvatar({ image: base64 })
-const toBase64 = (file) => new Promise((resolve, reject) => {
-  const fr = new FileReader();
-  fr.onload = () => resolve(fr.result);
-  fr.onerror = reject;
-  fr.readAsDataURL(file);
-});
 
 export default function ProfileEdit({ user, onUpdated }) {
   const navigate = useNavigate();
@@ -29,35 +21,39 @@ export default function ProfileEdit({ user, onUpdated }) {
   const [form, setForm] = useState({
     username: user.username || '',
     bio: user.bio || '',
-    avatarUrl: user.avatar || '', // optional direct URL
+    contactInfo: user.contactInfo || '',
+    title: user.title || '',
+    avatarUrl: user.avatar || '',
   });
-  const [file, setFile] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
   const initial = (form.username || user.email || 'U').trim()[0]?.toUpperCase();
-  const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-  const onPick   = (e) => setFile(e.target.files?.[0] || null);
-
-  const onSubmit = async (e) => {
+  const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value }); const onSubmit = async (e) => {
     e.preventDefault();
     setSaving(true); setError('');
     try {
-      // 1) upload avatar file if chosen
-      if (file) {
-        const b64 = await toBase64(file);
-        await uploadAvatar(b64);
+      // Update profile data
+      const payload = {
+        username: form.username,
+        bio: form.bio,
+        contactInfo: form.contactInfo,
+        title: form.title
+      };
+
+      // Add avatar URL if provided
+      if (form.avatarUrl) {
+        payload.avatar = form.avatarUrl;
       }
-      // 2) update username/bio (+ avatar URL if provided)
-      const payload = { username: form.username, bio: form.bio };
-      if (form.avatarUrl) payload.avatar = form.avatarUrl;
+
       await updateProfile(payload);
 
       // 3) refresh app user so navbar/profile update
       const fresh = await getProfile();
-      onUpdated?.(fresh.user || fresh);
+      const updatedUser = fresh.user || fresh;
+      onUpdated?.(updatedUser);
 
-      navigate('/profile');
+      navigate('/users/profile');
     } catch (err) {
       setError(err.message || 'Failed to save changes');
     } finally {
@@ -75,38 +71,60 @@ export default function ProfileEdit({ user, onUpdated }) {
         <aside className="profile-card identity">
           <div className="avatar">
             {form.avatarUrl
-              ? <img src={form.avatarUrl} alt="" style={{ width:'100%', height:'100%', objectFit:'cover', borderRadius:'50%' }} />
+              ? <img src={form.avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
               : <span>{initial}</span>}
           </div>
           <h2 className="uname">{form.username || user.username}</h2>
+          {form.title && <div className="user-title">{form.title}</div>}
           <div className="uemail">{user.email}</div>
           {form.bio && <p className="ubio">{form.bio}</p>}
+          {form.contactInfo && <div className="user-contact">📞 {form.contactInfo}</div>}
         </aside>
 
         {/* RIGHT form */}
-        <section className="profile-card" style={{ display:'grid', gap:'0.8rem' }}>
-          <form onSubmit={onSubmit} className="identity-actions" style={{ display:'grid', gap:'.75rem' }}>
-            <label style={{ display:'grid', gap:'.35rem' }}>
+        <section className="profile-card" style={{ display: 'grid', gap: '0.8rem' }}>
+          <form onSubmit={onSubmit} className="identity-actions" style={{ display: 'grid', gap: '.75rem' }}>
+            <label style={{ display: 'grid', gap: '.35rem' }}>
               Username
-              <input name="username" value={form.username} onChange={onChange} required />
+              <input name="username" value={form.username} onChange={onChange} required minLength={3} />
             </label>
 
-            <label style={{ display:'grid', gap:'.35rem' }}>
+            <label style={{ display: 'grid', gap: '.35rem' }}>
+              Professional Title
+              <input name="title" value={form.title} onChange={onChange} placeholder="e.g., Software Engineer, Student" maxLength={100} />
+            </label>
+
+            <label style={{ display: 'grid', gap: '.35rem' }}>
+              Contact Info
+              <input name="contactInfo" value={form.contactInfo} onChange={onChange} placeholder="e.g., LinkedIn, Phone" maxLength={200} />
+            </label>
+
+            <label style={{ display: 'grid', gap: '.35rem' }}>
               Bio
-              <textarea name="bio" rows={4} maxLength={500} value={form.bio} onChange={onChange} />
+              <textarea
+                name="bio"
+                rows={4}
+                maxLength={500}
+                value={form.bio}
+                onChange={onChange}
+                placeholder="Tell us about yourself..."
+              />
+              <small style={{ color: '#6b5a5a', fontSize: '0.85rem' }}>
+                {form.bio.length}/500 characters
+              </small>
             </label>
 
-            <label style={{ display:'grid', gap:'.35rem' }}>
-              Avatar URL (optional)
-              <input name="avatarUrl" value={form.avatarUrl} onChange={onChange} placeholder="https://…" />
+            <label style={{ display: 'grid', gap: '.35rem' }}>
+              Avatar Image URL
+              <input
+                name="avatarUrl"
+                value={form.avatarUrl}
+                onChange={onChange}
+                placeholder="https://example.com/your-image.jpg"
+              />
             </label>
 
-            <label style={{ display:'grid', gap:'.35rem' }}>
-              Or upload an image
-              <input type="file" accept="image/*" onChange={onPick} />
-            </label>
-
-            {error && <p style={{ color:'#b91c1c' }}>{error}</p>}
+            {error && <p style={{ color: '#b91c1c' }}>{error}</p>}
             <button className="btn btn-primary" disabled={saving}>
               {saving ? 'Saving…' : 'Save Changes'}
             </button>

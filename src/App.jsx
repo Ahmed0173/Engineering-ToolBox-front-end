@@ -8,6 +8,7 @@ import HomePage from './components/HomePage/HomePage.jsx'
 import './App.scss'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import * as authService from './services/authService'
+import { getProfile } from './services/profileService'
 
 import PrivateChats from './components/PrivateChats/PrivateChats.jsx'
 import PrivateChat from './components/PrivateChat/PrivateChat.jsx'
@@ -22,17 +23,38 @@ export default function App() {
 
   // Check for existing user on app startup
   useEffect(() => {
-    const existingUser = authService.getUser()
-    if (existingUser) {
-      setUser(existingUser)
+    const loadUser = async () => {
+      const token = localStorage.getItem('token')
+      if (token) {
+        try {
+          // Try to get full profile instead of just token data
+          const profileData = await getProfile()
+          setUser(profileData.user || profileData)
+        } catch (error) {
+          // If profile fetch fails, fall back to token data
+          console.log('Failed to fetch profile, using token data')
+          const existingUser = authService.getUser()
+          if (existingUser) {
+            setUser(existingUser)
+          }
+        }
+      }
     }
+
+    loadUser()
   }, [])
 
   // Real sign up handler using authService
   const handleSignUp = async (formData) => {
     try {
       const user = await authService.signUp(formData)
-      setUser(user)
+      // After signup, fetch full profile
+      try {
+        const profileData = await getProfile()
+        setUser(profileData.user || profileData)
+      } catch (error) {
+        setUser(user) // fallback to token data
+      }
       return { success: true }
     } catch (err) {
       return { success: false, message: err.message }
@@ -43,7 +65,13 @@ export default function App() {
   const handleSignIn = async (formData) => {
     try {
       const user = await authService.signIn(formData)
-      setUser(user)
+      // After signin, fetch full profile
+      try {
+        const profileData = await getProfile()
+        setUser(profileData.user || profileData)
+      } catch (error) {
+        setUser(user) // fallback to token data
+      }
     } catch (err) {
       // Pass through the original error message from the server
       throw err
