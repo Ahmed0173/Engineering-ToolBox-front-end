@@ -34,6 +34,7 @@ export default function PostDetails() {
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [showChatModal, setShowChatModal] = useState(false)
     const [selectedUser, setSelectedUser] = useState(null)
+    const [isSaved, setIsSaved] = useState(false)
 
 
     useEffect(() => {
@@ -48,7 +49,17 @@ export default function PostDetails() {
                 try {
                     setLoading(true); setError(null)
                     const data = await getPostById(postId)
-                    if (!ignore) setPost(data)
+                    if (!ignore) {
+                        setPost(data)
+                        // Check if the current user has saved this post
+                        if (user && data && Array.isArray(data.savedBy)) {
+                            const isPostSaved = data.savedBy.some(savedUser =>
+                                (typeof savedUser === 'object' && savedUser._id === user._id) ||
+                                (typeof savedUser === 'string' && savedUser === user._id)
+                            )
+                            setIsSaved(isPostSaved)
+                        }
+                    }
                 } catch (e) {
                     if (!ignore) setError('Failed to load post.')
                 } finally {
@@ -56,7 +67,7 @@ export default function PostDetails() {
                 }
             })()
         return () => { ignore = true }
-    }, [postId])
+    }, [postId, user])
 
     const isOwner = useMemo(() =>
         user && post?.author && sameId(post.author?._id, user?._id),
@@ -73,7 +84,18 @@ export default function PostDetails() {
 
     const handleSave = async () => {
         if (!user || !post) return alert('Please sign in to save posts')
-        try { setBusy(true); setPost(await savePost(post._id)) } finally { setBusy(false) }
+        try {
+            setBusy(true)
+            await savePost(post._id)
+            // Toggle the saved state locally
+            setIsSaved(prev => !prev)
+        } catch (err) {
+            console.error('Error saving post:', err)
+            const errorMessage = err.message || 'Failed to save post. Please try again.'
+            alert(errorMessage)
+        } finally {
+            setBusy(false)
+        }
     }
 
     const handleDeleteClick = () => {
@@ -148,7 +170,7 @@ export default function PostDetails() {
                             )}
                         </div>
                         <div className="pd-author-info">
-                            <div 
+                            <div
                                 className="pd-author-name clickable"
                                 onClick={(e) => handleAuthorClick(post.author, e)}
                                 style={{
@@ -187,8 +209,8 @@ export default function PostDetails() {
                         <button className={`pd-like ${isLiked ? 'liked' : ''}`} onClick={handleLike} disabled={busy || loading}>
                             ❤️ {isLiked ? 'Liked' : 'Like'} ({likeCount(post)})
                         </button>
-                        <button className="pd-save" onClick={handleSave} disabled={busy || loading}>
-                            🔖 Save for Later
+                        <button className={`pd-save ${isSaved ? 'saved' : ''}`} onClick={handleSave} disabled={busy || loading}>
+                            {isSaved ? '🔖 Saved' : '🔖 Save for Later'}
                         </button>
 
                     </div>

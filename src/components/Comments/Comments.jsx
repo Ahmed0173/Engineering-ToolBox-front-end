@@ -8,6 +8,7 @@ import {
     replyToComment
 } from '../../services/commentService'
 import PrivateChatModal from '../PostsPage/PrivateChatModal'
+import DeleteCommentModal from './DeleteCommentModal'
 import './Comments.scss'
 
 const Comments = ({ postId, currentUser }) => {
@@ -22,6 +23,9 @@ const Comments = ({ postId, currentUser }) => {
     const [error, setError] = useState('')
     const [showChatModal, setShowChatModal] = useState(false)
     const [selectedUser, setSelectedUser] = useState(null)
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [commentToDelete, setCommentToDelete] = useState(null)
+    const [deleteIsReply, setDeleteIsReply] = useState(false)
 
     // Helper function to get author display name
     const getAuthorDisplayName = (comment) => {
@@ -98,22 +102,22 @@ const Comments = ({ postId, currentUser }) => {
     // Helper function to get author object from comment
     const getAuthorObject = (comment) => {
         const author = comment.user_id || comment.author;
-        
+
         if (author && typeof author === 'object') {
             return author;
         }
-        
+
         return null;
     }
 
     // Helper function to get author avatar
     const getAuthorAvatar = (comment) => {
         const author = comment.user_id || comment.author;
-        
+
         if (author && typeof author === 'object' && author.avatar) {
             return author.avatar;
         }
-        
+
         // Return default avatar
         return "https://cdn.pfps.gg/pfps/2301-default-2.png";
     }
@@ -121,19 +125,19 @@ const Comments = ({ postId, currentUser }) => {
     // Helper function to check if author is clickable (not current user)
     const isAuthorClickable = (comment) => {
         if (!currentUser) return false;
-        
+
         const authorObj = getAuthorObject(comment);
         if (authorObj && authorObj._id !== currentUser._id) {
             return true;
         }
-        
+
         // Check if author is a string ID that's different from current user
         const author = comment.user_id || comment.author;
         if (typeof author === 'string' && author !== currentUser._id) {
             // We can't click on string IDs since we don't have user details
             return false;
         }
-        
+
         return false;
     }
 
@@ -234,18 +238,36 @@ const Comments = ({ postId, currentUser }) => {
         }
     }
 
-    const handleDelete = async (commentId) => {
-        if (!window.confirm('Are you sure you want to delete this comment?')) return
+    const handleDeleteClick = (comment, isReply = false) => {
+        setCommentToDelete(comment)
+        setDeleteIsReply(isReply)
+        setShowDeleteModal(true)
+    }
+
+    const handleConfirmDelete = async () => {
+        if (!commentToDelete) return
 
         try {
-            await deleteComment(postId, commentId)
+            await deleteComment(postId, commentToDelete._id)
             await fetchComments() // Refresh the entire comments list
             setError('')
+            setShowDeleteModal(false)
+            setCommentToDelete(null)
+            setDeleteIsReply(false)
         } catch (err) {
             console.error('Error deleting comment:', err)
             const errorMessage = err.message || 'Failed to delete comment. Please try again.'
             setError(errorMessage)
+            setShowDeleteModal(false)
+            setCommentToDelete(null)
+            setDeleteIsReply(false)
         }
+    }
+
+    const handleCancelDelete = () => {
+        setShowDeleteModal(false)
+        setCommentToDelete(null)
+        setDeleteIsReply(false)
     }
 
     const handleReply = async (commentId) => {
@@ -336,13 +358,13 @@ const Comments = ({ postId, currentUser }) => {
                                 <div className="comment-header">
                                     <div className="comment-author-section">
                                         <div className="comment-avatar">
-                                            <img 
-                                                src={getAuthorAvatar(comment)} 
+                                            <img
+                                                src={getAuthorAvatar(comment)}
                                                 alt={getAuthorDisplayName(comment)}
                                                 style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
                                             />
                                         </div>
-                                        <span 
+                                        <span
                                             className={`comment-author ${isAuthorClickable(comment) ? 'clickable' : ''}`}
                                             onClick={isAuthorClickable(comment) ? (e) => handleAuthorClick(comment, e) : undefined}
                                             style={{
@@ -415,7 +437,7 @@ const Comments = ({ postId, currentUser }) => {
                                                         ✏️ Edit
                                                     </button>
                                                     <button
-                                                        onClick={() => handleDelete(comment._id)}
+                                                        onClick={() => handleDeleteClick(comment)}
                                                         className="delete-btn"
                                                         title="Delete comment"
                                                         aria-label={`Delete comment: ${comment.content.substring(0, 30)}...`}
@@ -472,13 +494,13 @@ const Comments = ({ postId, currentUser }) => {
                                                 <div className="reply-header">
                                                     <div className="reply-author-section">
                                                         <div className="reply-avatar">
-                                                            <img 
-                                                                src={getAuthorAvatar(reply)} 
+                                                            <img
+                                                                src={getAuthorAvatar(reply)}
                                                                 alt={getAuthorDisplayName(reply)}
                                                                 style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }}
                                                             />
                                                         </div>
-                                                        <span 
+                                                        <span
                                                             className={`reply-author ${isAuthorClickable(reply) ? 'clickable' : ''}`}
                                                             onClick={isAuthorClickable(reply) ? (e) => handleAuthorClick(reply, e) : undefined}
                                                             style={{
@@ -540,7 +562,7 @@ const Comments = ({ postId, currentUser }) => {
                                                                     ✏️ Edit
                                                                 </button>
                                                                 <button
-                                                                    onClick={() => handleDelete(reply._id)}
+                                                                    onClick={() => handleDeleteClick(reply, true)}
                                                                     className="delete-btn"
                                                                     title="Delete reply"
                                                                 >
@@ -565,6 +587,15 @@ const Comments = ({ postId, currentUser }) => {
                     user={selectedUser}
                     onStartChat={handleStartChat}
                     onClose={handleCloseModal}
+                />
+            )}
+
+            {showDeleteModal && commentToDelete && (
+                <DeleteCommentModal
+                    comment={commentToDelete}
+                    isReply={deleteIsReply}
+                    onConfirmDelete={handleConfirmDelete}
+                    onClose={handleCancelDelete}
                 />
             )}
         </div>

@@ -232,6 +232,36 @@ html {
             }
         }
     }
+
+    .stats-loading,
+    .stats-error {
+        text-align: center;
+        padding: 2rem;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    .stats-loading {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        color: #666;
+        border-left: 4px solid #9C3D54;
+
+        &::before {
+            content: '⏳';
+            margin-right: 0.5rem;
+        }
+    }
+
+    .stats-error {
+        background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+        color: #c66;
+        border-left: 4px solid #dc3545;
+
+        &::before {
+            content: '⚠️';
+            margin-right: 0.5rem;
+        }
+    }
 }
 
 // Tools Section
@@ -317,6 +347,30 @@ html {
         display: flex;
         flex-direction: column;
         gap: 1rem;
+    }
+
+    .recent-posts-loading,
+    .no-posts {
+        text-align: center;
+        padding: 2rem;
+        border: 1px solid #e1e8ed;
+        border-radius: 8px;
+        color: #666;
+        font-style: italic;
+    }
+
+    .recent-posts-loading {
+        &::before {
+            content: '📄';
+            margin-right: 0.5rem;
+        }
+    }
+
+    .no-posts {
+        &::before {
+            content: '📭';
+            margin-right: 0.5rem;
+        }
     }
 
     .post-preview {

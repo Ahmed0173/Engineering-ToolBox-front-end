@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "./HomePage.scss";
+import { getUserStats } from "../../services/userService";
+import { getAllPosts } from "../../services/postService";
 
 const HomePage = ({ user }) => {
     const [recentPosts, setRecentPosts] = useState([]);
@@ -9,45 +11,46 @@ const HomePage = ({ user }) => {
         commentsCount: 0,
         likesReceived: 0
     });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Mock data for demonstration - replace with actual API calls
+    // Fetch real data when user is logged in
     useEffect(() => {
-        if (user) {
-            // Simulate fetching recent posts
-            setRecentPosts([
-                {
-                    _id: '1',
-                    content: 'How to calculate beam deflection in steel structures?',
-                    author: { username: 'EngineerMike' },
-                    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-                    likes_count: 12,
-                    tags: ['structural', 'steel']
-                },
-                {
-                    _id: '2',
-                    content: 'Best practices for HVAC system design in commercial buildings',
-                    author: { username: 'HVACExpert' },
-                    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
-                    likes_count: 8,
-                    tags: ['hvac', 'commercial']
-                },
-                {
-                    _id: '3',
-                    content: 'Circuit analysis for complex electrical networks',
-                    author: { username: 'ElectricalGuru' },
-                    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-                    likes_count: 15,
-                    tags: ['electrical', 'circuits']
-                }
-            ]);
+        const fetchData = async () => {
+            if (user) {
+                setLoading(true);
+                setError(null);
+                try {
+                    // Fetch user stats and recent posts in parallel
+                    const [statsData, postsData] = await Promise.all([
+                        getUserStats(),
+                        getAllPosts({ limit: 3 }) // Get latest 3 posts
+                    ]);
 
-            // Simulate user stats
-            setUserStats({
-                postsCount: Math.floor(Math.random() * 20) + 5,
-                commentsCount: Math.floor(Math.random() * 50) + 10,
-                likesReceived: Math.floor(Math.random() * 100) + 25
-            });
-        }
+                    setUserStats(statsData);
+                    setRecentPosts(postsData || []);
+                } catch (err) {
+                    console.error('Error fetching dashboard data:', err);
+                    setError('Failed to load dashboard data');
+                    // Fall back to mock data if API fails
+                    setRecentPosts([
+                        {
+                            _id: '1',
+                            content: 'How to calculate beam deflection in steel structures?',
+                            author: { username: 'EngineerMike' },
+                            createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000),
+                            likes: ['user1', 'user2'],
+                            likes_count: 2,
+                            tags: ['structural', 'steel']
+                        }
+                    ]);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchData();
     }, [user]);
 
     const formatTimeAgo = (date) => {
@@ -89,29 +92,35 @@ const HomePage = ({ user }) => {
                         {/* User Stats */}
                         <section className="dashboard-section stats-section">
                             <h2 className="section-title">Your Activity</h2>
-                            <div className="stats-grid">
-                                <div className="stat-card">
-                                    <div className="stat-icon">📄</div>
-                                    <div className="stat-info">
-                                        <span className="stat-number">{userStats.postsCount}</span>
-                                        <span className="stat-label">Posts Created</span>
+                            {loading ? (
+                                <div className="stats-loading">Loading your stats...</div>
+                            ) : error ? (
+                                <div className="stats-error">Failed to load stats</div>
+                            ) : (
+                                <div className="stats-grid">
+                                    <div className="stat-card">
+                                        <div className="stat-icon">📄</div>
+                                        <div className="stat-info">
+                                            <span className="stat-number">{userStats.postsCount}</span>
+                                            <span className="stat-label">Posts Created</span>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card">
+                                        <div className="stat-icon">💬</div>
+                                        <div className="stat-info">
+                                            <span className="stat-number">{userStats.commentsCount}</span>
+                                            <span className="stat-label">Comments</span>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card">
+                                        <div className="stat-icon">❤️</div>
+                                        <div className="stat-info">
+                                            <span className="stat-number">{userStats.likesReceived}</span>
+                                            <span className="stat-label">Likes Received</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="stat-card">
-                                    <div className="stat-icon">💬</div>
-                                    <div className="stat-info">
-                                        <span className="stat-number">{userStats.commentsCount}</span>
-                                        <span className="stat-label">Comments</span>
-                                    </div>
-                                </div>
-                                <div className="stat-card">
-                                    <div className="stat-icon">❤️</div>
-                                    <div className="stat-info">
-                                        <span className="stat-number">{userStats.likesReceived}</span>
-                                        <span className="stat-label">Likes Received</span>
-                                    </div>
-                                </div>
-                            </div>
+                            )}
                         </section>
 
                         {/* Quick Tools */}
@@ -147,27 +156,33 @@ const HomePage = ({ user }) => {
                                 <h2 className="section-title">Recent Community Posts</h2>
                                 <Link to="/posts" className="view-all-link">View All →</Link>
                             </div>
-                            <div className="recent-posts">
-                                {recentPosts.map(post => (
-                                    <Link to={`/posts/${post._id}`} key={post._id} className="post-preview">
-                                        <div className="post-content">
-                                            <h4>{post.content}</h4>
-                                            <div className="post-meta">
-                                                <span className="post-author">@{post.author.username}</span>
-                                                <span className="post-time">{formatTimeAgo(post.createdAt)}</span>
-                                                <span className="post-likes">❤️ {post.likes_count}</span>
-                                            </div>
-                                            {post.tags && (
-                                                <div className="post-tags">
-                                                    {post.tags.map(tag => (
-                                                        <span key={tag} className="tag">#{tag}</span>
-                                                    ))}
+                            {loading ? (
+                                <div className="recent-posts-loading">Loading recent posts...</div>
+                            ) : (
+                                <div className="recent-posts">
+                                    {recentPosts.length > 0 ? recentPosts.map(post => (
+                                        <Link to={`/posts/${post._id}`} key={post._id} className="post-preview">
+                                            <div className="post-content">
+                                                <h4>{post.content}</h4>
+                                                <div className="post-meta">
+                                                    <span className="post-author">@{post.author?.username || 'Unknown'}</span>
+                                                    <span className="post-time">{formatTimeAgo(new Date(post.createdAt))}</span>
+                                                    <span className="post-likes">❤️ {post.likes?.length || post.likes_count || 0}</span>
                                                 </div>
-                                            )}
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
+                                                {post.tags && post.tags.length > 0 && (
+                                                    <div className="post-tags">
+                                                        {post.tags.map(tag => (
+                                                            <span key={tag} className="tag">#{tag}</span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </Link>
+                                    )) : (
+                                        <div className="no-posts">No recent posts available</div>
+                                    )}
+                                </div>
+                            )}
                         </section>
 
                         {/* Engineering Tips */}

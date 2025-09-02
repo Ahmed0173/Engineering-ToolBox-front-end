@@ -14,6 +14,7 @@ import { getProfile } from './services/profileService'
 import PrivateChats from './components/PrivateChats/PrivateChats.jsx'
 import PrivateChat from './components/PrivateChat/PrivateChat.jsx'
 import UserProfile from './components/UserProfile/UserProfile.jsx'
+import PublicUserProfile from './components/UserProfile/PublicUserProfile.jsx'
 import PostDetails from './components/PostDetails/PostDetails.jsx'
 import { createPost, updatePost } from './services/postService.js'
 import ProfileEdit from './components/UserProfile/ProfileEdit.jsx'
@@ -114,6 +115,7 @@ export default function App() {
         <Route path="/" element={<HomePage user={user} />} />
         <Route path="/posts" element={<PostsPage />} />
         <Route path="/posts/:postId" element={<PostDetails />} />
+        <Route path="/profile/:userId" element={<PublicUserProfile />} />
         <Route path="/calculator" element={<CalculatorPage />} />
 
         {/* Auth Routes - redirect to home if already signed in */}
