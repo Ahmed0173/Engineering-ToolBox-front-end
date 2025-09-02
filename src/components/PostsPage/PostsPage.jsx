@@ -296,18 +296,27 @@ const PostsPage = () => {
                         >
                             <div className="post-header">
                                 <div className="post-author">
-                                    <span
-                                        className="author-name clickable"
-                                        onClick={(e) => handleAuthorClick(post.author, e)}
-                                        style={{
-                                            cursor: post.author && user && post.author._id !== user._id ? 'pointer' : 'default',
-                                            color: '#0077cc',
-                                            textDecoration: 'underline'
-                                        }}
-                                    >
-                                        @{post.author?.username || 'Unknown'}
-                                    </span>
-                                    <span className="post-date">{formatDate(post.createdAt)}</span>
+                                    <div className="author-avatar">
+                                        <img 
+                                            src={post.author?.avatar || "https://cdn.pfps.gg/pfps/2301-default-2.png"} 
+                                            alt={post.author?.username || 'User'}
+                                            style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }}
+                                        />
+                                    </div>
+                                    <div className="author-info">
+                                        <span
+                                            className="author-name clickable"
+                                            onClick={(e) => handleAuthorClick(post.author, e)}
+                                            style={{
+                                                cursor: post.author && user && post.author._id !== user._id ? 'pointer' : 'default',
+                                                color: '#0077cc',
+                                                textDecoration: 'underline'
+                                            }}
+                                        >
+                                            @{post.author?.username || 'Unknown'}
+                                        </span>
+                                        <span className="post-date">{formatDate(post.createdAt)}</span>
+                                    </div>
                                 </div>
                                 {isUserPost(post) && (
                                     <div className="post-actions">
