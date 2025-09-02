@@ -4,6 +4,7 @@ import { getPostById, likePost, savePost, deletePost } from '../../services/post
 import { getUser } from '../../services/authService'
 import DeletePostModal from './DeletePostModal'
 import Comments from '../Comments/Comments'
+import PrivateChatModal from '../PostsPage/PrivateChatModal'
 import './PostDetails.scss'
 
 const sameId = (a, b) => {
@@ -31,6 +32,8 @@ export default function PostDetails() {
     const [user, setUser] = useState(null)
     const [busy, setBusy] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [showChatModal, setShowChatModal] = useState(false)
+    const [selectedUser, setSelectedUser] = useState(null)
 
 
     useEffect(() => {
@@ -93,6 +96,33 @@ export default function PostDetails() {
         setShowDeleteModal(false)
     }
 
+    const handleAuthorClick = (author, e) => {
+        e.stopPropagation()
+        if (author && user && author._id !== user._id) {
+            setSelectedUser(author)
+            setShowChatModal(true)
+        }
+    }
+
+    const handleStartChat = () => {
+        if (!selectedUser) return
+
+        const cleanUserData = {
+            _id: selectedUser._id,
+            username: selectedUser.username,
+            email: selectedUser.email
+        }
+
+        navigate(`/chats`, { state: { selectedUser: cleanUserData } })
+        setShowChatModal(false)
+        setSelectedUser(null)
+    }
+
+    const handleCloseModal = () => {
+        setShowChatModal(false)
+        setSelectedUser(null)
+    }
+
     if (loading) return <div className="post-details loading">Loading...</div>
     if (error) return <div className="post-details error">{error}</div>
     if (!post) return <div className="post-details">Post not found.</div>
@@ -118,7 +148,17 @@ export default function PostDetails() {
                             )}
                         </div>
                         <div className="pd-author-info">
-                            <div className="pd-author-name">@{post.author?.username || 'Unknown'}</div>
+                            <div 
+                                className="pd-author-name clickable"
+                                onClick={(e) => handleAuthorClick(post.author, e)}
+                                style={{
+                                    cursor: post.author && user && post.author._id !== user._id ? 'pointer' : 'default',
+                                    color: post.author && user && post.author._id !== user._id ? '#0077cc' : 'inherit',
+                                    textDecoration: post.author && user && post.author._id !== user._id ? 'underline' : 'none'
+                                }}
+                            >
+                                @{post.author?.username || 'Unknown'}
+                            </div>
                             <div className="pd-date">{formatDate(post.createdAt)}</div>
                         </div>
                     </div>
@@ -164,6 +204,14 @@ export default function PostDetails() {
                     post={post}
                     onConfirmDelete={handleConfirmDelete}
                     onClose={handleCloseDeleteModal}
+                />
+            )}
+
+            {showChatModal && selectedUser && (
+                <PrivateChatModal
+                    user={selectedUser}
+                    onStartChat={handleStartChat}
+                    onClose={handleCloseModal}
                 />
             )}
         </div>
