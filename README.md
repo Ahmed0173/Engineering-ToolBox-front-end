@@ -30,7 +30,6 @@ The combination of calculation tools and social features makes this app unique i
 - CSS/SCSS
 - React Router DOM
 - React Icons
-- Cloudinary (for image uploads)
 
 **Backend:**
 - Node.js
