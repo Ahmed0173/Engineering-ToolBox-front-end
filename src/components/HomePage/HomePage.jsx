@@ -66,6 +66,16 @@ const HomePage = ({ user }) => {
         }
     };
 
+    const handleScrollToFeatures = () => {
+        const featuresSection = document.getElementById('home-features');
+        if (featuresSection) {
+            featuresSection.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    };
+
     return (
         <main>
             {user ? (
@@ -235,7 +245,20 @@ const HomePage = ({ user }) => {
                                     </Link>
                                 </div>
                                 <div className="home-hero-text-cta-link">
-                                    Want To Explore First? <a href="#home-features">See what we offer</a>.
+                                    Want To Explore First? <button
+                                        onClick={handleScrollToFeatures}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            color: 'inherit',
+                                            textDecoration: 'underline',
+                                            cursor: 'pointer',
+                                            font: 'inherit',
+                                            padding: 0
+                                        }}
+                                    >
+                                        See what we offer
+                                    </button>.
                                 </div>
                             </div>
                         </div>
