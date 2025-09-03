@@ -40,8 +40,6 @@ The combination of calculation tools and social features makes this app unique i
 - bcrypt
 - Morgan middleware
 - CORS
-- Multer (file uploads)
-- Cloudinary
 
 ## ✨ Features
 
